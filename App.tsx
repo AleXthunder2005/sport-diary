@@ -1,14 +1,20 @@
-import { ScreenContent } from 'components/ScreenContent';
-import { StatusBar } from 'expo-status-bar';
+import { NavigationContainer } from '@react-navigation/native';
 
-import './global.css';
+import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+import './global.css';
+import {MainTabNavigator} from "./routers/MainTabNavigator";
+
+
+
 export default function App() {
-  return (
-    <SafeAreaProvider>
-      <ScreenContent title="Home" path="App.tsx"></ScreenContent>
-      <StatusBar style="auto" />
-    </SafeAreaProvider>
-  );
+    return (
+        <SafeAreaProvider>
+            <NavigationContainer>
+                <MainTabNavigator/>
+                <StatusBar style="auto" />
+            </NavigationContainer>
+        </SafeAreaProvider>
+    );
 }
