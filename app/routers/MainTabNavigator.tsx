@@ -16,41 +16,43 @@ function TabBarIcon({ Icon, color, size }: { Icon: any; color: string; size: num
 export function MainTabNavigator() {
     const {t} = useTranslation();
 
-return (
-    <Tab.Navigator
-        screenOptions={({ route }) => ({
-            tabBarIcon: ({ color, size }) => {
-                if (route.name === "WorkoutTab") {
-                    return <Dumbbell color={color} size={size} />;
-                } else if (route.name === "ExercisesTab") {
-                    return <Clipboard color={color} size={size} />;
-                } else if (route.name === "NutritionTab") {
-                    return <Apple color={color} size={size} />;
-                } else if (route.name === "ProfileTab") {
-                    return <User color={color} size={size} />;
+    return (
+        <Tab.Navigator
+            screenOptions={({ route }) => ({
+                tabBarIcon: ({ color, size }) => {
+                    switch (route.name) {
+                        case "WorkoutTab":
+                            return <Dumbbell color={color} size={size}/>;
+                        case "ExercisesTab":
+                            return <Clipboard color={color} size={size}/>;
+                        case "NutritionTab":
+                            return <Apple color={color} size={size}/>;
+                        case "ProfileTab":
+                            return <User color={color} size={size}/>;
+                    }
                 }
-            }
-        })}
-    >
-        <Tab.Screen
-            name="WorkoutTab" // фиксированное имя
-            component={WorkoutStackNavigator}
-            options={{ tabBarLabel: t("routes.workout") }}
-        />
-        <Tab.Screen
-            name="ExercisesTab"
-            component={ExercisesStackNavigator}
-            options={{ tabBarLabel: t("routes.exercises") }}
-        />
-        <Tab.Screen
-            name="NutritionTab"
-            component={NutritionStackNavigator}
-            options={{ tabBarLabel: t("routes.nutrition") }}
-        />
-        <Tab.Screen
-            name="ProfileTab"
-            component={ProfileStackNavigator}
-            options={{ tabBarLabel: t("routes.profile") }}
-        />
-    </Tab.Navigator>
-)}
+            })}
+        >
+            <Tab.Screen
+                name="WorkoutTab"
+                component={WorkoutStackNavigator}
+                options={{ title: t("routes.workout") }}
+            />
+            <Tab.Screen
+                name="ExercisesTab"
+                component={ExercisesStackNavigator}
+                options={{ title: t("routes.exercises") }}
+            />
+            <Tab.Screen
+                name="NutritionTab"
+                component={NutritionStackNavigator}
+                options={{ title: t("routes.nutrition") }}
+            />
+            <Tab.Screen
+                name="ProfileTab"
+                component={ProfileStackNavigator}
+                options={{ title: t("routes.profile") }}
+            />
+        </Tab.Navigator>
+    )
+}
