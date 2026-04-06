@@ -1,5 +1,5 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import {WorkoutHome} from "../screens/workout/WorkoutHome";
+import {WorkoutHome} from "@/app/screens/workout/WorkoutHome";
 
 const WorkoutStack = createNativeStackNavigator();
 

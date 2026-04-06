@@ -1,5 +1,5 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import {NutritionHome} from "../screens/nutrition/NutritionHome";
+import {NutritionHome} from "@/app/screens/nutrition/NutritionHome";
 
 const NutritionStack = createNativeStackNavigator();
 

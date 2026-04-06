@@ -1,5 +1,5 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import {ExercisesHome} from "../screens/excersise/ExercisesHome";
+import {ExercisesHome} from "@/app/screens/excersise/ExercisesHome";
 
 const ExercisesStack = createNativeStackNavigator();
 
