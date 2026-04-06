@@ -5,6 +5,7 @@ import {MainTabNavigator} from "@/app/routers/MainTabNavigator";
 
 import { GluestackUIProvider } from 'app/gluestack-ui-provider';
 import '@/global.css';
+import "app/language/i18n";
 import {useAppTheme} from '@/app/theme/theme';
 
 export default function App() {

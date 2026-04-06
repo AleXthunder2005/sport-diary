@@ -1,0 +1,20 @@
+{
+  "profile": "Профиль",
+  "changeTheme": "Сменить тему",
+  "changeLanguage": "Сменить язык",
+
+  "tabs" : {
+    "profile": "Профиль",
+    "nutrition": "Питание",
+    "exercises": "Упражнения",
+    "workout": "Тренировка"
+  },
+
+  "routes" : {
+    "profile": "Профиль",
+    "nutrition": "Питание",
+    "exercises": "Упражнения",
+    "workout": "Тренировка"
+  }
+
+}

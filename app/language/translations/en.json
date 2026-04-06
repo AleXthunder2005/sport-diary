@@ -1,0 +1,19 @@
+{
+  "profile": "Profile",
+  "changeTheme": "Change theme",
+  "changeLanguage": "Change language",
+
+  "tabs" : {
+    "profile": "Profile",
+    "nutrition": "Nutrition",
+    "exercises": "Exercises",
+    "workout": "Workout"
+  },
+
+  "routes" : {
+    "profile": "Profile",
+    "nutrition": "Nutrition",
+    "exercises": "Exercises",
+    "workout": "Workout"
+  }
+}
