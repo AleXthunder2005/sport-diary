@@ -1,20 +1,31 @@
 {
-  "profile": "Профиль",
-  "changeTheme": "Сменить тему",
-  "changeLanguage": "Сменить язык",
-
-  "tabs" : {
-    "profile": "Профиль",
-    "nutrition": "Питание",
-    "exercises": "Упражнения",
-    "workout": "Тренировка"
+  "profile": {
+    "title": "Профиль",
+    "changeTheme": "Сменить тему",
+    "changeLanguage": "Сменить язык",
+    "welcome_back": "С возвращением!",
+    "manage_your_profile": "Управление настройками профиля",
+    "height": "Рост",
+    "weight": "Вес",
+    "preferences": "Настройки",
+    "language": "Язык",
+    "dark_mode": "Тёмная тема",
+    "light_mode": "Светлая тема",
+    "app_version": "Версия приложения",
+    "theme": "Тема"
   },
 
-  "routes" : {
+  "tabs": {
     "profile": "Профиль",
     "nutrition": "Питание",
     "exercises": "Упражнения",
-    "workout": "Тренировка"
-  }
+    "workout": "Тренировки"
+  },
 
+  "routes": {
+    "profile": "Профиль",
+    "nutrition": "Питание",
+    "exercises": "Упражнения",
+    "workout": "Тренировки"
+  }
 }

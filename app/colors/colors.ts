@@ -1,0 +1,48 @@
+export const themeColors = {
+    light: {
+        background: '#ffffff',
+        foreground: '#000000',
+        primary: '#030213',
+        'primary-foreground': '#ffffff',
+        secondary: '#f2f2f5',
+        'secondary-foreground': '#030213',
+        muted: '#ececf0',
+        'muted-foreground': '#717182',
+        accent: '#e9ebef',
+        'accent-foreground': '#030213',
+        destructive: '#d4183d',
+        'destructive-foreground': '#ffffff',
+        border: '#d2d2d2',
+        ring: '#e3f0fc',
+        card: '#ffffff',
+        'card-foreground': '#000000',
+        input: '#d2d2d2',
+        'input-background': '#ffffff',
+        'switch-background': '#d4d4d4',
+    },
+    dark: {
+        background: '#252525',
+        foreground: '#fbfbfb',
+        primary: '#fbfbfb',
+        'primary-foreground': '#343434',
+        secondary: '#444444',
+        'secondary-foreground': '#fbfbfb',
+        muted: '#444444',
+        'muted-foreground': '#b4b4b4',
+        accent: '#444444',
+        'accent-foreground': '#fbfbfb',
+        destructive: '#7f1d1d',
+        'destructive-foreground': '#fbfbfb',
+        border: '#646464',
+        ring: '#707070',
+        card: '#252525',
+        'card-foreground': '#fbfbfb',
+        input: '#646464',
+        'input-background': '#252525',
+        'switch-background': '#333333',
+    },
+};
+
+export const getColor = (theme : keyof typeof themeColors, colorName: keyof typeof themeColors.dark) => {
+    return themeColors[theme]?.[colorName] || themeColors.light[colorName];
+};

@@ -15,8 +15,8 @@ export const config = {
     '--accent-foreground': '3 2 19',
     '--destructive': '212 24 61',
     '--destructive-foreground': '255 255 255',
-    '--border': '0 0 0',
-    '--ring': '180 180 180',
+    '--border': '210 210 210',
+    '--ring': '227 240 252',
   }),
   dark: vars({
     '--background': '37 37 37',
@@ -31,7 +31,7 @@ export const config = {
     '--accent-foreground': '251 251 251',
     '--destructive': '127 29 29',
     '--destructive-foreground': '251 251 251',
-    '--border': '68 68 68',
+    '--border': '100 100 100',
     '--ring': '112 112 112',
   }),
 };

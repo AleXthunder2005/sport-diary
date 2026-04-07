@@ -1,16 +1,28 @@
 {
-  "profile": "Profile",
-  "changeTheme": "Change theme",
-  "changeLanguage": "Change language",
+  "profile": {
+    "title": "Profile",
+    "changeTheme": "Change theme",
+    "changeLanguage": "Change language",
+    "welcome_back": "Welcome Back!",
+    "manage_your_profile": "Manage your profile settings",
+    "height": "Height",
+    "weight": "Weight",
+    "preferences": "Preferences",
+    "language": "Language",
+    "dark_mode": "Dark Mode",
+    "light_mode": "Light Mode",
+    "app_version": "App Version",
+    "theme": "Theme"
+  },
 
-  "tabs" : {
+  "tabs": {
     "profile": "Profile",
     "nutrition": "Nutrition",
     "exercises": "Exercises",
     "workout": "Workout"
   },
 
-  "routes" : {
+  "routes": {
     "profile": "Profile",
     "nutrition": "Nutrition",
     "exercises": "Exercises",

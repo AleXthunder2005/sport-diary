@@ -12,6 +12,7 @@ import { useColorScheme } from "nativewind";
 import i18n from "app/language/i18n";
 import { preferencesStorage } from "@/app/storages/preferencesStorage";
 import { Appearance } from "react-native";
+import {AppContextProvider} from "@/app/contexts/AppContext";
 
 export default function App() {
     const { colorScheme, setColorScheme } = useColorScheme();
@@ -50,15 +51,15 @@ export default function App() {
     if (!isReady) return null;
 
     return (
-        <GluestackUIProvider mode={colorScheme}>
-            <SafeAreaProvider>
-                <NavigationContainer
-                    theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
-                >
-                    <MainTabNavigator />
-                    <StatusBar style="auto" />
-                </NavigationContainer>
-            </SafeAreaProvider>
-        </GluestackUIProvider>
+            <GluestackUIProvider mode={colorScheme}>
+                <SafeAreaProvider>
+                    <NavigationContainer
+                        theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
+                    >
+                        <MainTabNavigator />
+                        <StatusBar style="auto" />
+                    </NavigationContainer>
+                </SafeAreaProvider>
+            </GluestackUIProvider>
     );
 }
