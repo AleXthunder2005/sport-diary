@@ -15,6 +15,68 @@
     "theme": "Theme"
   },
 
+  "exercises": {
+    "title": "",
+    "create": "Create",
+    "search": "Search exercises...",
+    "notFound": "Exercises not found",
+    "noData": "No data for selected period",
+    "noHistory": "No exercise history",
+    "edit": "Edit exercise",
+    "createNew": "Create exercise",
+    "editExercise": "Edit exercise",
+    "photo": "Exercise photo",
+    "gallery": "Gallery",
+    "camera": "Camera",
+    "name": "Name",
+    "nameRequired": "Name is required",
+    "muscleGroup": "Muscle group",
+    "muscleGroupRequired": "Muscle group is required",
+    "type": "Exercise type",
+    "description": "Technique description",
+    "tips": "Notes/Tips",
+    "save": "Save",
+    "success": "Success",
+    "created": "Exercise created",
+    "updated": "Exercise updated",
+    "bestWeight": "Best weight",
+    "oneRM": "1RM (est.)",
+    "totalSets": "Total sets",
+    "totalVolume": "Volume (kg)",
+    "lastPerformed": "Last performed",
+    "weightDynamics": "Weight dynamics",
+    "history": "History",
+    "maxWeight": "Max weight",
+
+    "muscleGroups": {
+      "chest": "Chest",
+      "back": "Back",
+      "legs": "Legs",
+      "shoulders": "Shoulders",
+      "arms": "Arms",
+      "core": "Core",
+      "cardio": "Cardio",
+      "stretching": "Stretching"
+    },
+
+    "types": {
+      "strength": "Strength",
+      "cardio": "Cardio",
+      "stretching": "Stretching"
+    },
+
+    "chart": {
+      "30days": "30 days",
+      "3months": "3 months",
+      "1year": "Year",
+      "allTime": "All time"
+    },
+
+    "filters": {
+      "all": "All"
+    }
+  },
+
   "tabs": {
     "profile": "Profile",
     "nutrition": "Nutrition",

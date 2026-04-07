@@ -1,4 +1,3 @@
-// app/screens/excersise/ExercisesHome.jsx
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, Pressable, ActivityIndicator } from 'react-native';
 import { Plus } from 'lucide-react-native';
@@ -118,7 +117,7 @@ export default function ExercisesHome({ navigation }) {
                 {/* Header */}
                 <View className="flex-row justify-between items-center mb-4">
                     <Text className="text-2xl font-bold text-foreground">
-                        Упражнения
+                        {t('exercises.title')}
                     </Text>
                     <Pressable
                         onPress={handleCreatePress}
@@ -126,7 +125,7 @@ export default function ExercisesHome({ navigation }) {
                     >
                         <Plus size={20} color={colors.primaryForeground} />
                         <Text className="text-primary-foreground font-medium">
-                            Создать
+                            {t('exercises.create')}
                         </Text>
                     </Pressable>
                 </View>
@@ -157,7 +156,7 @@ export default function ExercisesHome({ navigation }) {
                 ) : (
                     <View className="py-20 items-center">
                         <Text className="text-muted-foreground text-center">
-                            Упражнения не найдены
+                            {t('exercises.notFound')}
                         </Text>
                     </View>
                 )}

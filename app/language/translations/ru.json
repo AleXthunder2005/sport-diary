@@ -15,6 +15,71 @@
     "theme": "Тема"
   },
 
+  "exercises": {
+    "title": "",
+    "create": "Создать",
+    "search": "Поиск упражнений...",
+    "notFound": "Упражнения не найдены",
+    "noData": "Нет данных за выбранный период",
+    "noHistory": "Нет истории выполнения",
+    "edit": "Редактировать упражнение",
+    "createNew": "Создание упражнения",
+    "editExercise": "Редактирование упражнения",
+    "photo": "Фото упражнения",
+    "gallery": "Галерея",
+    "camera": "Камера",
+    "name": "Название",
+    "nameRequired": "Название обязательно",
+    "muscleGroup": "Группа мышц",
+    "muscleGroupRequired": "Выберите группу мышц",
+    "type": "Тип упражнения",
+    "description": "Описание техники",
+    "tips": "Заметки/подсказки",
+    "save": "Сохранить",
+    "success": "Успех",
+    "created": "Упражнение создано",
+    "updated": "Упражнение обновлено",
+    "bestWeight": "Лучший вес",
+    "oneRM": "1ПМ (расчет)",
+    "totalSets": "Всего подходов",
+    "totalVolume": "Объем (кг)",
+    "lastPerformed": "Последнее выполнение",
+    "weightDynamics": "Динамика рабочего веса",
+    "history": "История выполнения",
+    "maxWeight": "Макс. вес",
+    "error": "Ошибка",
+    "permissionRequired": "Нужны разрешения для доступа к галерее",
+    "cameraPermissionRequired": "Нужны разрешения для использования камеры",
+
+    "muscleGroups": {
+      "chest": "Грудь",
+      "back": "Спина",
+      "legs": "Ноги",
+      "shoulders": "Плечи",
+      "arms": "Руки",
+      "core": "Кор",
+      "cardio": "Кардио",
+      "stretching": "Растяжка"
+    },
+
+    "types": {
+      "strength": "Силовое",
+      "cardio": "Кардио",
+      "stretching": "Растяжка"
+    },
+
+    "chart": {
+      "30days": "30 дней",
+      "3months": "3 месяца",
+      "1year": "Год",
+      "allTime": "Всё время"
+    },
+
+    "filters": {
+      "all": "Все"
+    }
+  },
+
   "tabs": {
     "profile": "Профиль",
     "nutrition": "Питание",

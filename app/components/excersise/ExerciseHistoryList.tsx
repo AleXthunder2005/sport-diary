@@ -1,9 +1,12 @@
+// app/components/excersise/ExerciseHistoryList.jsx
 import React from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { Calendar, ArrowRight } from 'lucide-react-native';
 import { getColor } from '@/app/colors/colors';
+import { useTranslation } from 'react-i18next';
 
 export const ExerciseHistoryList = ({ history, onWorkoutPress, isDark }) => {
+    const { t } = useTranslation();
     const colors = {
         primary: getColor(isDark ? 'dark' : 'light', 'primary'),
         mutedForeground: getColor(isDark ? 'dark' : 'light', 'muted-foreground'),
@@ -18,7 +21,7 @@ export const ExerciseHistoryList = ({ history, onWorkoutPress, isDark }) => {
     return (
         <View className="bg-card rounded-xl p-4 border border-border/50">
             <Text className="text-foreground font-semibold text-lg mb-4">
-                История выполнения
+                {t('exercises.history')}
             </Text>
 
             {history.length > 0 ? (
@@ -49,13 +52,13 @@ export const ExerciseHistoryList = ({ history, onWorkoutPress, isDark }) => {
                         </View>
 
                         <Text className="text-muted-foreground text-xs mt-2">
-                            Макс. вес: {item.maxWeight}кг
+                            {t('exercises.maxWeight')}: {item.maxWeight}кг
                         </Text>
                     </Pressable>
                 ))
             ) : (
                 <View className="py-8 items-center">
-                    <Text className="text-muted-foreground">Нет истории выполнения</Text>
+                    <Text className="text-muted-foreground">{t('exercises.noHistory')}</Text>
                 </View>
             )}
         </View>

@@ -1,37 +1,11 @@
 import React from 'react';
 import { View, Text, Pressable, Image } from 'react-native';
-import { Dumbbell, Heart, Zap, Activity } from 'lucide-react-native';
 import { getColor } from '@/app/colors/colors';
-
-const muscleGroupIcons = {
-    chest: '💪',
-    back: '🔙',
-    legs: '🦵',
-    shoulders: '🎯',
-    arms: '💪',
-    core: '🎯',
-    cardio: '❤️',
-    stretching: '🧘',
-};
-
-const muscleGroupLabels = {
-    chest: 'Грудь',
-    back: 'Спина',
-    legs: 'Ноги',
-    shoulders: 'Плечи',
-    arms: 'Руки',
-    core: 'Кор',
-    cardio: 'Кардио',
-    stretching: 'Растяжка',
-};
-
-const typeIcons = {
-    strength: Dumbbell,
-    cardio: Heart,
-    stretching: Activity,
-};
+import { getMuscleGroupById, getExerciseTypeById } from '@/app/entities/exercisesMetadata';
+import { useTranslation } from 'react-i18next';
 
 export const ExerciseCard = ({ exercise, onPress, isDark }) => {
+    const { t } = useTranslation();
     const colors = {
         primary: getColor(isDark ? 'dark' : 'light', 'primary'),
         mutedForeground: getColor(isDark ? 'dark' : 'light', 'muted-foreground'),
@@ -39,20 +13,20 @@ export const ExerciseCard = ({ exercise, onPress, isDark }) => {
         border: getColor(isDark ? 'dark' : 'light', 'border'),
     };
 
-    const TypeIcon = typeIcons[exercise.type];
+    const muscleGroup = getMuscleGroupById(exercise.muscleGroup);
+    const exerciseType = getExerciseTypeById(exercise.type);
+    const TypeIcon = exerciseType.icon;
 
     return (
         <Pressable onPress={() => onPress(exercise)}>
             <View className="bg-card rounded-xl mb-3 overflow-hidden border border-border/50 shadow-soft-1">
                 <View className="flex-row p-4">
                     {/* Photo */}
-                    <View className="w-20 h-20 rounded-lg bg-primary/10 mr-4 overflow-hidden">
+                    <View className="w-20 h-20 rounded-lg bg-primary/10 mr-4 overflow-hidden justify-center items-center">
                         {exercise.photo ? (
                             <Image source={{ uri: exercise.photo }} className="w-full h-full" />
                         ) : (
-                            <View className="w-full h-full justify-center items-center">
-                                <Text className="text-3xl">{muscleGroupIcons[exercise.muscleGroup]}</Text>
-                            </View>
+                            <TypeIcon size={32} color={colors.primary} />
                         )}
                     </View>
 
@@ -65,12 +39,12 @@ export const ExerciseCard = ({ exercise, onPress, isDark }) => {
                             <View className="flex-row items-center gap-1">
                                 <TypeIcon size={14} color={colors.mutedForeground} />
                                 <Text className="text-muted-foreground text-xs">
-                                    {exercise.type === 'strength' ? 'Силовое' : exercise.type === 'cardio' ? 'Кардио' : 'Растяжка'}
+                                    {t(exerciseType.labelKey)}
                                 </Text>
                             </View>
                             <View className="flex-row items-center gap-1">
                                 <Text className="text-muted-foreground text-xs">
-                                    {muscleGroupLabels[exercise.muscleGroup]}
+                                    {t(muscleGroup.labelKey)}
                                 </Text>
                             </View>
                         </View>
