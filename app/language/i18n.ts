@@ -1,6 +1,5 @@
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
-import {getLocales} from "react-native-localize";
 import en from "./translations/en.json";
 import ru from "./translations/ru.json";
 
@@ -12,8 +11,7 @@ const resources = {
 i18n.use(initReactI18next)
     .init({
         resources,
-        // lng: getLocales()[0].languageCode, //default
-        lng: "ru", //default
+        lng: "en", //default
         fallbackLng: "en",
         interpolation: {
             escapeValue: false,
