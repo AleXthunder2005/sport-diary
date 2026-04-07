@@ -1,12 +1,12 @@
 // app/components/excersise/ExerciseStatsChart.jsx
 import React from 'react';
-import { View, Text, Dimensions, ScrollView, Pressable } from 'react-native';
+import { View, Text, Dimensions, ScrollView, Pressable, ActivityIndicator } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
 import { getColor } from '@/app/colors/colors';
 import { chartPeriods } from '@/app/entities/exercisesMetadata';
 import { useTranslation } from 'react-i18next';
 
-export const ExerciseStatsChart = ({ data, period, onPeriodChange, isDark }) => {
+export const ExerciseStatsChart = ({ data, period, onPeriodChange, isDark, isLoading = false }) => {
     const { t } = useTranslation();
     const screenWidth = Dimensions.get('window').width - 48;
     const colors = {
@@ -56,7 +56,11 @@ export const ExerciseStatsChart = ({ data, period, onPeriodChange, isDark }) => 
             </ScrollView>
 
             {/* Chart */}
-            {data.length > 0 ? (
+            {isLoading ? (
+                <View className="h-48 justify-center items-center">
+                    <ActivityIndicator size="large" color={colors.primary} />
+                </View>
+            ) : data.length > 0 ? (
                 <LineChart
                     data={chartData}
                     width={screenWidth - 32}

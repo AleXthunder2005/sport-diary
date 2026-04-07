@@ -15,7 +15,7 @@ export const ExerciseCard = ({ exercise, onPress, isDark }) => {
 
     const muscleGroup = getMuscleGroupById(exercise.muscleGroup);
     const exerciseType = getExerciseTypeById(exercise.type);
-    const TypeIcon = exerciseType.icon;
+    const MuscleIcon = muscleGroup.icon;
 
     return (
         <Pressable onPress={() => onPress(exercise)}>
@@ -26,7 +26,7 @@ export const ExerciseCard = ({ exercise, onPress, isDark }) => {
                         {exercise.photo ? (
                             <Image source={{ uri: exercise.photo }} className="w-full h-full" />
                         ) : (
-                            <TypeIcon size={32} color={colors.primary} />
+                            <MuscleIcon size={44} color={colors.primary} />
                         )}
                     </View>
 
@@ -37,7 +37,6 @@ export const ExerciseCard = ({ exercise, onPress, isDark }) => {
                         </Text>
                         <View className="flex-row items-center gap-3 mb-2">
                             <View className="flex-row items-center gap-1">
-                                <TypeIcon size={14} color={colors.mutedForeground} />
                                 <Text className="text-muted-foreground text-xs">
                                     {t(exerciseType.labelKey)}
                                 </Text>

@@ -92,7 +92,7 @@ export const ProfileHome = () => {
                             </Text>
                         </View>
                         <Text className="text-foreground text-2xl font-bold">
-                            180 <Text className="text-base font-normal text-muted-foreground">cm</Text>
+                            180 <Text className="text-base font-normal text-muted-foreground">{t("units.cm")}</Text>
                         </Text>
                     </View>
 
@@ -107,7 +107,7 @@ export const ProfileHome = () => {
                             </Text>
                         </View>
                         <Text className="text-foreground text-2xl font-bold">
-                            75 <Text className="text-base font-normal text-muted-foreground">kg</Text>
+                            75 <Text className="text-base font-normal text-muted-foreground">{t("units.kg")}</Text>
                         </Text>
                     </View>
                 </View>
@@ -141,7 +141,6 @@ export const ProfileHome = () => {
                             </View>
                         </View>
 
-                        {/* Theme Toggle - Улучшенный Switch */}
                         <View className="pt-2">
                             <View className="flex-row items-center justify-between p-4 bg-input-background rounded-xl border border-border">
                                 <View className="flex-row items-center gap-3">

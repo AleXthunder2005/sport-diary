@@ -16,7 +16,7 @@
   },
 
   "exercises": {
-    "title": "",
+    "title": "Упражнения",
     "create": "Создать",
     "search": "Поиск упражнений...",
     "notFound": "Упражнения не найдены",
@@ -29,12 +29,15 @@
     "gallery": "Галерея",
     "camera": "Камера",
     "name": "Название",
+    "namePlaceholder": "Введите название",
     "nameRequired": "Название обязательно",
     "muscleGroup": "Группа мышц",
     "muscleGroupRequired": "Выберите группу мышц",
     "type": "Тип упражнения",
     "description": "Описание техники",
+    "descriptionPlaceholder": "Опишите технику выполнения",
     "tips": "Заметки/подсказки",
+    "tipsPlaceholder": "Полезные заметки и подсказки",
     "save": "Сохранить",
     "success": "Успех",
     "created": "Упражнение создано",
@@ -78,6 +81,11 @@
     "filters": {
       "all": "Все"
     }
+  },
+
+  "units": {
+    "kg": "кг",
+    "cm": "см"
   },
 
   "tabs": {

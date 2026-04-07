@@ -1,7 +1,7 @@
 // app/components/excersise/FilterBar.jsx
 import React, { useState } from 'react';
 import { View, Text, Pressable, ScrollView, TextInput } from 'react-native';
-import { Search, Filter, X } from 'lucide-react-native';
+import { Search, Filter, X, Plus } from 'lucide-react-native';
 import { getColor } from '@/app/colors/colors';
 import { filterMuscleGroups } from '@/app/entities/exercisesMetadata';
 import { useTranslation } from 'react-i18next';
@@ -11,12 +11,14 @@ export const FilterBar = ({
                               onSearchChange,
                               selectedMuscle,
                               onMuscleChange,
-                              isDark
+                              isDark,
+                              onCreatePress
                           }) => {
     const { t } = useTranslation();
     const [showFilters, setShowFilters] = useState(false);
     const colors = {
         primary: getColor(isDark ? 'dark' : 'light', 'primary'),
+        primaryForeground: getColor(isDark ? 'dark' : 'light', 'primary-foreground'),
         border: getColor(isDark ? 'dark' : 'light', 'border'),
         background: getColor(isDark ? 'dark' : 'light', 'background'),
         card: getColor(isDark ? 'dark' : 'light', 'card'),
@@ -24,7 +26,7 @@ export const FilterBar = ({
 
     return (
         <View className="mb-4">
-            {/* Search Bar */}
+            {/* Search Bar + Create Button */}
             <View className="flex-row gap-2 mb-3">
                 <View className="flex-1 flex-row items-center bg-input-background rounded-xl border border-border px-3">
                     <Search size={20} color={colors.primary} />
@@ -41,6 +43,15 @@ export const FilterBar = ({
                         </Pressable>
                     )}
                 </View>
+                <Pressable
+                    onPress={onCreatePress}
+                    className="bg-primary px-4 rounded-xl flex-row items-center gap-2"
+                >
+                    <Plus size={20} color={colors.primaryForeground} />
+                    <Text className="text-primary-foreground font-medium">
+                        {t('exercises.create')}
+                    </Text>
+                </Pressable>
                 <Pressable
                     onPress={() => setShowFilters(!showFilters)}
                     className="px-4 rounded-xl border border-border justify-center"

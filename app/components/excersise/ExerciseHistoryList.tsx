@@ -1,4 +1,3 @@
-// app/components/excersise/ExerciseHistoryList.jsx
 import React from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { Calendar, ArrowRight } from 'lucide-react-native';
@@ -6,7 +5,7 @@ import { getColor } from '@/app/colors/colors';
 import { useTranslation } from 'react-i18next';
 
 export const ExerciseHistoryList = ({ history, onWorkoutPress, isDark }) => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const colors = {
         primary: getColor(isDark ? 'dark' : 'light', 'primary'),
         mutedForeground: getColor(isDark ? 'dark' : 'light', 'muted-foreground'),
@@ -15,7 +14,9 @@ export const ExerciseHistoryList = ({ history, onWorkoutPress, isDark }) => {
 
     const formatDate = (date) => {
         const d = new Date(date);
-        return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', year: 'numeric' });
+        return d.toLocaleDateString(i18n.language === 'ru' ? 'ru-RU' : 'en-US',
+            { day: 'numeric', month: 'short', year: 'numeric' }
+        );
     };
 
     return (
@@ -45,14 +46,14 @@ export const ExerciseHistoryList = ({ history, onWorkoutPress, isDark }) => {
                             {item.sets.map((set, idx) => (
                                 <View key={idx} className="bg-card px-2 py-1 rounded">
                                     <Text className="text-muted-foreground text-xs">
-                                        {set.weight}кг × {set.reps}
+                                        {set.weight}{t("units.kg")} × {set.reps}
                                     </Text>
                                 </View>
                             ))}
                         </View>
 
                         <Text className="text-muted-foreground text-xs mt-2">
-                            {t('exercises.maxWeight')}: {item.maxWeight}кг
+                            {t('exercises.maxWeight')}: {item.maxWeight} {t("units.kg")}
                         </Text>
                     </Pressable>
                 ))

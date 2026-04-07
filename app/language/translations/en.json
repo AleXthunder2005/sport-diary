@@ -16,7 +16,7 @@
   },
 
   "exercises": {
-    "title": "",
+    "title": "Exercises",
     "create": "Create",
     "search": "Search exercises...",
     "notFound": "Exercises not found",
@@ -29,12 +29,15 @@
     "gallery": "Gallery",
     "camera": "Camera",
     "name": "Name",
+    "namePlaceholder": "Enter name",
     "nameRequired": "Name is required",
     "muscleGroup": "Muscle group",
     "muscleGroupRequired": "Muscle group is required",
     "type": "Exercise type",
     "description": "Technique description",
+    "descriptionPlaceholder": "Describe the execution technique",
     "tips": "Notes/Tips",
+    "tipsPlaceholder": "Useful notes and tips",
     "save": "Save",
     "success": "Success",
     "created": "Exercise created",
@@ -47,6 +50,9 @@
     "weightDynamics": "Weight dynamics",
     "history": "History",
     "maxWeight": "Max weight",
+    "error": "Error",
+    "permissionRequired": "Permission required to access gallery",
+    "cameraPermissionRequired": "Permission required to use camera",
 
     "muscleGroups": {
       "chest": "Chest",
@@ -75,6 +81,11 @@
     "filters": {
       "all": "All"
     }
+  },
+
+  "units": {
+    "kg": "kg",
+    "cm": "cm"
   },
 
   "tabs": {

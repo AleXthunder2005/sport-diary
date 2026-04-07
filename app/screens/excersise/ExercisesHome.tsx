@@ -1,3 +1,4 @@
+// app/screens/excersise/ExercisesHome.jsx
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, Pressable, ActivityIndicator } from 'react-native';
 import { Plus } from 'lucide-react-native';
@@ -75,7 +76,6 @@ export default function ExercisesHome({ navigation }) {
 
     const loadExercises = async () => {
         setLoading(true);
-        // TODO: Загрузить из хранилища
         setTimeout(() => {
             setExercises(mockExercises);
             setLoading(false);
@@ -114,29 +114,14 @@ export default function ExercisesHome({ navigation }) {
     return (
         <View className="flex-1 bg-background">
             <ScrollView className="flex-1 px-4 pt-4">
-                {/* Header */}
-                <View className="flex-row justify-between items-center mb-4">
-                    <Text className="text-2xl font-bold text-foreground">
-                        {t('exercises.title')}
-                    </Text>
-                    <Pressable
-                        onPress={handleCreatePress}
-                        className="bg-primary px-4 py-2 rounded-full flex-row items-center gap-2"
-                    >
-                        <Plus size={20} color={colors.primaryForeground} />
-                        <Text className="text-primary-foreground font-medium">
-                            {t('exercises.create')}
-                        </Text>
-                    </Pressable>
-                </View>
-
-                {/* Filters */}
+                {/* Filters with Create Button */}
                 <FilterBar
                     searchQuery={searchQuery}
                     onSearchChange={setSearchQuery}
                     selectedMuscle={selectedMuscle}
                     onMuscleChange={setSelectedMuscle}
                     isDark={isDark}
+                    onCreatePress={handleCreatePress}
                 />
 
                 {/* Exercises List */}

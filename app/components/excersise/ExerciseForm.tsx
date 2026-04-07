@@ -15,23 +15,7 @@ import { useTranslation } from 'react-i18next';
 import * as ImagePicker from 'expo-image-picker';
 import { Camera, Trash2, Save, X } from 'lucide-react-native';
 import { getColor } from '@/app/colors/colors';
-
-const muscleGroups = [
-    { id: 'chest', label: 'Грудь' },
-    { id: 'back', label: 'Спина' },
-    { id: 'legs', label: 'Ноги' },
-    { id: 'shoulders', label: 'Плечи' },
-    { id: 'arms', label: 'Руки' },
-    { id: 'core', label: 'Кор' },
-    { id: 'cardio', label: 'Кардио' },
-    { id: 'stretching', label: 'Растяжка' },
-];
-
-const exerciseTypes = [
-    { id: 'strength', label: 'Силовое' },
-    { id: 'cardio', label: 'Кардио' },
-    { id: 'stretching', label: 'Растяжка' },
-];
+import { muscleGroups, exerciseTypes } from '@/app/entities/exercisesMetadata';
 
 export default function ExerciseForm({ navigation, route }) {
     const { colorScheme } = useAppTheme();
@@ -86,7 +70,7 @@ export default function ExerciseForm({ navigation, route }) {
     const pickImage = async () => {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (status !== 'granted') {
-            Alert.alert('Ошибка', 'Нужны разрешения для доступа к галерее');
+            Alert.alert(t('exercises.error'), t('exercises.permissionRequired'));
             return;
         }
 
@@ -105,7 +89,7 @@ export default function ExerciseForm({ navigation, route }) {
     const takePhoto = async () => {
         const { status } = await ImagePicker.requestCameraPermissionsAsync();
         if (status !== 'granted') {
-            Alert.alert('Ошибка', 'Нужны разрешения для использования камеры');
+            Alert.alert(t('exercises.error'), t('exercises.cameraPermissionRequired'));
             return;
         }
 
@@ -127,10 +111,10 @@ export default function ExerciseForm({ navigation, route }) {
     const validate = () => {
         const newErrors = {};
         if (!formData.name.trim()) {
-            newErrors.name = 'Название обязательно';
+            newErrors.name = t('exercises.nameRequired');
         }
         if (!formData.muscleGroup) {
-            newErrors.muscleGroup = 'Выберите группу мышц';
+            newErrors.muscleGroup = t('exercises.muscleGroupRequired');
         }
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -148,8 +132,8 @@ export default function ExerciseForm({ navigation, route }) {
         setTimeout(() => {
             setLoading(false);
             Alert.alert(
-                'Успех',
-                isEditing ? 'Упражнение обновлено' : 'Упражнение создано',
+                t('exercises.success'),
+                isEditing ? t('exercises.updated') : t('exercises.created'),
                 [{ text: 'OK', onPress: () => navigation.goBack() }]
             );
         }, 500);
@@ -169,7 +153,7 @@ export default function ExerciseForm({ navigation, route }) {
                 {/* Header */}
                 <View className="flex-row justify-between items-center mb-4">
                     <Text className="text-2xl font-bold text-foreground">
-                        {isEditing ? 'Редактирование упражнения' : 'Создание упражнения'}
+                        {isEditing ? t('exercises.editExercise') : t('exercises.createNew')}
                     </Text>
                     <Pressable onPress={() => navigation.goBack()} className="p-2">
                         <X size={24} color={colors.primary} />
@@ -178,7 +162,7 @@ export default function ExerciseForm({ navigation, route }) {
 
                 {/* Photo Section */}
                 <View className="mb-6">
-                    <Text className="text-foreground font-medium mb-2">Фото упражнения</Text>
+                    <Text className="text-foreground font-medium mb-2">{t('exercises.photo')}</Text>
                     <View className="flex-row gap-3">
                         {formData.photo ? (
                             <View className="relative">
@@ -197,14 +181,14 @@ export default function ExerciseForm({ navigation, route }) {
                                     className="w-24 h-24 bg-input-background rounded-xl border-2 border-dashed border-border justify-center items-center"
                                 >
                                     <Camera size={24} color={colors.border} />
-                                    <Text className="text-muted-foreground text-xs mt-1">Галерея</Text>
+                                    <Text className="text-muted-foreground text-xs mt-1">{t('exercises.gallery')}</Text>
                                 </Pressable>
                                 <Pressable
                                     onPress={takePhoto}
                                     className="w-24 h-24 bg-input-background rounded-xl border-2 border-dashed border-border justify-center items-center"
                                 >
                                     <Camera size={24} color={colors.border} />
-                                    <Text className="text-muted-foreground text-xs mt-1">Камера</Text>
+                                    <Text className="text-muted-foreground text-xs mt-1">{t('exercises.camera')}</Text>
                                 </Pressable>
                             </View>
                         )}
@@ -213,10 +197,10 @@ export default function ExerciseForm({ navigation, route }) {
 
                 {/* Name Input */}
                 <View className="mb-4">
-                    <Text className="text-foreground font-medium mb-2">Название *</Text>
+                    <Text className="text-foreground font-medium mb-2">{t('exercises.name')} *</Text>
                     <TextInput
                         className="bg-input-background rounded-xl p-3 text-foreground border border-border"
-                        placeholder="Введите название"
+                        placeholder={t('exercises.namePlaceholder')}
                         placeholderTextColor={colors.border}
                         value={formData.name}
                         onChangeText={(text) => setFormData({ ...formData, name: text })}
@@ -228,7 +212,7 @@ export default function ExerciseForm({ navigation, route }) {
 
                 {/* Muscle Group Picker */}
                 <View className="mb-4">
-                    <Text className="text-foreground font-medium mb-2">Группа мышц *</Text>
+                    <Text className="text-foreground font-medium mb-2">{t('exercises.muscleGroup')} *</Text>
                     <View className="bg-input-background rounded-xl border border-border overflow-hidden">
                         <Picker
                             selectedValue={formData.muscleGroup}
@@ -237,7 +221,11 @@ export default function ExerciseForm({ navigation, route }) {
                             style={{ color: isDark ? '#fff' : '#000' }}
                         >
                             {muscleGroups.map((group) => (
-                                <Picker.Item key={group.id} label={group.label} value={group.id} />
+                                <Picker.Item
+                                    key={group.id}
+                                    label={t(group.labelKey)}
+                                    value={group.id}
+                                />
                             ))}
                         </Picker>
                     </View>
@@ -245,7 +233,7 @@ export default function ExerciseForm({ navigation, route }) {
 
                 {/* Exercise Type Picker */}
                 <View className="mb-4">
-                    <Text className="text-foreground font-medium mb-2">Тип упражнения *</Text>
+                    <Text className="text-foreground font-medium mb-2">{t('exercises.type')} *</Text>
                     <View className="bg-input-background rounded-xl border border-border overflow-hidden">
                         <Picker
                             selectedValue={formData.type}
@@ -254,7 +242,11 @@ export default function ExerciseForm({ navigation, route }) {
                             style={{ color: isDark ? '#fff' : '#000' }}
                         >
                             {exerciseTypes.map((type) => (
-                                <Picker.Item key={type.id} label={type.label} value={type.id} />
+                                <Picker.Item
+                                    key={type.id}
+                                    label={t(type.labelKey)}
+                                    value={type.id}
+                                />
                             ))}
                         </Picker>
                     </View>
@@ -262,10 +254,10 @@ export default function ExerciseForm({ navigation, route }) {
 
                 {/* Description Input */}
                 <View className="mb-4">
-                    <Text className="text-foreground font-medium mb-2">Описание техники</Text>
+                    <Text className="text-foreground font-medium mb-2">{t('exercises.description')}</Text>
                     <TextInput
                         className="bg-input-background rounded-xl p-3 text-foreground border border-border"
-                        placeholder="Опишите технику выполнения"
+                        placeholder={t('exercises.descriptionPlaceholder')}
                         placeholderTextColor={colors.border}
                         multiline
                         numberOfLines={4}
@@ -277,10 +269,10 @@ export default function ExerciseForm({ navigation, route }) {
 
                 {/* Tips Input */}
                 <View className="mb-6">
-                    <Text className="text-foreground font-medium mb-2">Заметки/подсказки</Text>
+                    <Text className="text-foreground font-medium mb-2">{t('exercises.tips')}</Text>
                     <TextInput
                         className="bg-input-background rounded-xl p-3 text-foreground border border-border"
-                        placeholder="Полезные заметки и подсказки"
+                        placeholder={t('exercises.tipsPlaceholder')}
                         placeholderTextColor={colors.border}
                         multiline
                         numberOfLines={3}
@@ -301,9 +293,7 @@ export default function ExerciseForm({ navigation, route }) {
                     ) : (
                         <>
                             <Save size={20} color={colors.primaryForeground} />
-                            <Text className="text-primary-foreground font-semibold text-lg">
-                                Сохранить
-                            </Text>
+                            <Text className="text-primary-foreground font-semibold text-lg">{t('exercises.save')}</Text>
                         </>
                     )}
                 </Pressable>
