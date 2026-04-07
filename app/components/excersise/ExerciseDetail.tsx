@@ -1,4 +1,3 @@
-// app/screens/excersise/ExerciseDetail.jsx
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, ScrollView, Pressable, ActivityIndicator } from 'react-native';
 import { useAppTheme } from '@/app/theme/theme';

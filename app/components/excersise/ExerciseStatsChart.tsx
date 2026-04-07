@@ -1,4 +1,3 @@
-// app/components/excersise/ExerciseStatsChart.jsx
 import React from 'react';
 import { View, Text, Dimensions, ScrollView, Pressable, ActivityIndicator } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
@@ -32,7 +31,7 @@ export const ExerciseStatsChart = ({ data, period, onPeriodChange, isDark, isLoa
                 {t('exercises.weightDynamics')}
             </Text>
 
-            {/* Period Filter - Above Chart */}
+            {/* Period Filter*/}
             <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-4">
                 <View className="flex-row gap-2">
                     {chartPeriods.map((p) => (
@@ -63,7 +62,7 @@ export const ExerciseStatsChart = ({ data, period, onPeriodChange, isDark, isLoa
             ) : data.length > 0 ? (
                 <LineChart
                     data={chartData}
-                    width={screenWidth - 32}
+                    width={screenWidth - 12}
                     height={220}
                     chartConfig={{
                         backgroundColor: colors.card,
@@ -76,14 +75,14 @@ export const ExerciseStatsChart = ({ data, period, onPeriodChange, isDark, isLoa
                             borderRadius: 16,
                         },
                         propsForDots: {
-                            r: '6',
+                            r: '4',
                             strokeWidth: '2',
                             stroke: colors.primary,
                         },
                     }}
-                    bezier
+
                     style={{
-                        marginLeft: -20,
+                        marginLeft: -13,
                         borderRadius: 16,
                     }}
                 />
