@@ -1,59 +1,11 @@
 // app/screens/excersise/ExercisesHome.jsx
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, Pressable, ActivityIndicator } from 'react-native';
-import { Plus } from 'lucide-react-native';
 import { useAppTheme } from '@/app/theme/theme';
 import { useTranslation } from 'react-i18next';
 import { ExerciseCard, FilterBar } from '@/app/components/excersise';
 import { getColor } from '@/app/colors/colors';
-
-// Mock data
-const mockExercises = [
-    {
-        id: '1',
-        name: 'Жим лежа',
-        muscleGroup: 'chest',
-        type: 'strength',
-        description: 'Базовое упражнение для развития грудных мышц',
-        photo: null,
-        isActive: true,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-    },
-    {
-        id: '2',
-        name: 'Приседания со штангой',
-        muscleGroup: 'legs',
-        type: 'strength',
-        description: 'Базовое упражнение для ног',
-        photo: null,
-        isActive: true,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-    },
-    {
-        id: '3',
-        name: 'Тяга штанги в наклоне',
-        muscleGroup: 'back',
-        type: 'strength',
-        description: 'Упражнение для развития широчайших мышц спины',
-        photo: null,
-        isActive: true,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-    },
-    {
-        id: '4',
-        name: 'Бег на беговой дорожке',
-        muscleGroup: 'cardio',
-        type: 'cardio',
-        description: 'Кардио нагрузка для выносливости',
-        photo: null,
-        isActive: true,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-    },
-];
+import { exercisesApi } from '@/app/services/exercises/exerciseService';
 
 export default function ExercisesHome({ navigation }) {
     const { colorScheme } = useAppTheme();
@@ -76,10 +28,9 @@ export default function ExercisesHome({ navigation }) {
 
     const loadExercises = async () => {
         setLoading(true);
-        setTimeout(() => {
-            setExercises(mockExercises);
-            setLoading(false);
-        }, 500);
+        const data = await exercisesApi.getExercises();
+        setExercises(data);
+        setLoading(false);
     };
 
     const filterExercises = () => {

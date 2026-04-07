@@ -15,7 +15,7 @@ export interface Exercise {
     name: string;
     muscleGroup: MuscleGroup;
     type: ExerciseType;
-    photo?: string;
+    photo?: string | null;
     description?: string;
     tips?: string;
     isActive: boolean;

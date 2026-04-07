@@ -25,8 +25,8 @@ export function MainTabNavigator() {
                             return <Dumbbell color={color} size={size}/>;
                         case "ExercisesTab":
                             return <Clipboard color={color} size={size}/>;
-                        case "NutritionTab":
-                            return <Apple color={color} size={size}/>;
+                        // case "NutritionTab":
+                        //     return <Apple color={color} size={size}/>;
                         case "ProfileTab":
                             return <User color={color} size={size}/>;
                     }
@@ -43,11 +43,11 @@ export function MainTabNavigator() {
                 component={ExercisesStackNavigator}
                 options={{ title: t("routes.exercises") }}
             />
-            <Tab.Screen
-                name="NutritionTab"
-                component={NutritionStackNavigator}
-                options={{ title: t("routes.nutrition") }}
-            />
+            {/*<Tab.Screen*/}
+            {/*    name="NutritionTab"*/}
+            {/*    component={NutritionStackNavigator}*/}
+            {/*    options={{ title: t("routes.nutrition") }}*/}
+            {/*/>*/}
             <Tab.Screen
                 name="ProfileTab"
                 component={ProfileStackNavigator}

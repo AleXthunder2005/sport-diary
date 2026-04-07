@@ -1,3 +1,4 @@
+// app/screens/excersise/ExerciseForm.jsx
 import React, { useState, useEffect } from 'react';
 import {
     View,
@@ -16,6 +17,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { Camera, Trash2, Save, X } from 'lucide-react-native';
 import { getColor } from '@/app/colors/colors';
 import { muscleGroups, exerciseTypes } from '@/app/entities/exercisesMetadata';
+import { exercisesApi } from '@/app/services/exercises/exerciseService';
 
 export default function ExerciseForm({ navigation, route }) {
     const { colorScheme } = useAppTheme();
@@ -45,18 +47,9 @@ export default function ExerciseForm({ navigation, route }) {
     }, [id]);
 
     const loadExercise = async () => {
-        // TODO: Загрузить упражнение из хранилища по id
-        setTimeout(() => {
-            setFormData({
-                name: 'Жим лежа',
-                muscleGroup: 'chest',
-                type: 'strength',
-                photo: null,
-                description: 'Базовое упражнение для развития грудных мышц',
-                tips: 'Держите лопатки сведенными',
-            });
-            setInitialLoading(false);
-        }, 500);
+        const data = await exercisesApi.getExerciseFormData(id);
+        setFormData(data);
+        setInitialLoading(false);
     };
 
     const colors = {
@@ -125,18 +118,23 @@ export default function ExerciseForm({ navigation, route }) {
 
         setLoading(true);
 
-        // TODO: Сохранить в хранилище
-        // Если упражнение существует и используется в тренировках,
-        // при деактивации нужно сделать мягкое удаление (set isActive: false)
+        try {
+            if (isEditing) {
+                await exercisesApi.updateExercise(id, formData);
+            } else {
+                await exercisesApi.createExercise(formData);
+            }
 
-        setTimeout(() => {
-            setLoading(false);
             Alert.alert(
                 t('exercises.success'),
                 isEditing ? t('exercises.updated') : t('exercises.created'),
                 [{ text: 'OK', onPress: () => navigation.goBack() }]
             );
-        }, 500);
+        } catch (error) {
+            Alert.alert(t('exercises.error'), 'Произошла ошибка при сохранении');
+        } finally {
+            setLoading(false);
+        }
     };
 
     if (initialLoading) {

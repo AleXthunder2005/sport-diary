@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react';
+// app/screens/excersise/ExerciseDetail.jsx
+import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, Pressable, ActivityIndicator } from 'react-native';
 import { useAppTheme } from '@/app/theme/theme';
 import { useTranslation } from 'react-i18next';
@@ -6,192 +7,7 @@ import { Edit3, ArrowLeft } from 'lucide-react-native';
 import { ExerciseStatsChart, ExerciseHistoryList } from '@/app/components/excersise';
 import { getColor } from '@/app/colors/colors';
 import { getMuscleGroupById, getExerciseTypeById } from '@/app/entities/exercisesMetadata';
-
-// Mock data for stats
-const mockStatsData = {
-    bestWeight: 120,
-    bestOneRM: 135,
-    totalVolume: 12500,
-    totalSets: 48,
-    lastPerformed: new Date('2024-11-29'),
-    frequency: 2,
-};
-
-const mockChartData = {
-    '30d': [
-        { date: '01.11', weight: 100 },
-        { date: '08.11', weight: 105 },
-        { date: '15.11', weight: 110 },
-        { date: '22.11', weight: 115 },
-        { date: '29.11', weight: 120 },
-    ],
-    '3m': [
-        { date: '01.09', weight: 85 },
-        { date: '15.09', weight: 90 },
-        { date: '01.10', weight: 95 },
-        { date: '15.10', weight: 100 },
-        { date: '01.11', weight: 105 },
-        { date: '15.11', weight: 110 },
-        { date: '29.11', weight: 120 },
-    ],
-    '1y': [
-        { date: '01.01', weight: 70 },
-        { date: '01.03', weight: 80 },
-        { date: '01.06', weight: 90 },
-        { date: '01.09', weight: 100 },
-        { date: '01.11', weight: 120 },
-    ],
-    'all': [
-        { date: '01.01', weight: 70 },
-        { date: '01.03', weight: 80 },
-        { date: '01.06', weight: 90 },
-        { date: '01.09', weight: 100 },
-        { date: '01.11', weight: 120 },
-    ],
-};
-
-const mockHistory = {
-    '30d': [
-        {
-            id: '1',
-            workoutId: 'w1',
-            workoutDate: new Date('2024-11-29'),
-            sets: [
-                { weight: 100, reps: 8 },
-                { weight: 110, reps: 6 },
-                { weight: 120, reps: 4 },
-            ],
-            maxWeight: 120,
-        },
-        {
-            id: '2',
-            workoutId: 'w2',
-            workoutDate: new Date('2024-11-22'),
-            sets: [
-                { weight: 90, reps: 10 },
-                { weight: 100, reps: 8 },
-                { weight: 110, reps: 6 },
-            ],
-            maxWeight: 110,
-        },
-        {
-            id: '3',
-            workoutId: 'w3',
-            workoutDate: new Date('2024-11-15'),
-            sets: [
-                { weight: 80, reps: 10 },
-                { weight: 90, reps: 8 },
-                { weight: 100, reps: 6 },
-            ],
-            maxWeight: 100,
-        },
-    ],
-    '3m': [
-        {
-            id: '1',
-            workoutId: 'w1',
-            workoutDate: new Date('2024-11-29'),
-            sets: [
-                { weight: 100, reps: 8 },
-                { weight: 110, reps: 6 },
-                { weight: 120, reps: 4 },
-            ],
-            maxWeight: 120,
-        },
-        {
-            id: '2',
-            workoutId: 'w2',
-            workoutDate: new Date('2024-10-22'),
-            sets: [
-                { weight: 90, reps: 10 },
-                { weight: 100, reps: 8 },
-                { weight: 110, reps: 6 },
-            ],
-            maxWeight: 110,
-        },
-        {
-            id: '3',
-            workoutId: 'w3',
-            workoutDate: new Date('2024-09-15'),
-            sets: [
-                { weight: 80, reps: 10 },
-                { weight: 85, reps: 8 },
-                { weight: 90, reps: 6 },
-            ],
-            maxWeight: 90,
-        },
-    ],
-    '1y': [
-        {
-            id: '1',
-            workoutId: 'w1',
-            workoutDate: new Date('2024-11-29'),
-            sets: [
-                { weight: 100, reps: 8 },
-                { weight: 110, reps: 6 },
-                { weight: 120, reps: 4 },
-            ],
-            maxWeight: 120,
-        },
-        {
-            id: '2',
-            workoutId: 'w2',
-            workoutDate: new Date('2024-08-22'),
-            sets: [
-                { weight: 90, reps: 10 },
-                { weight: 100, reps: 8 },
-                { weight: 110, reps: 6 },
-            ],
-            maxWeight: 110,
-        },
-        {
-            id: '3',
-            workoutId: 'w3',
-            workoutDate: new Date('2024-05-15'),
-            sets: [
-                { weight: 80, reps: 10 },
-                { weight: 85, reps: 8 },
-                { weight: 90, reps: 6 },
-            ],
-            maxWeight: 90,
-        },
-    ],
-    'all': [
-        {
-            id: '1',
-            workoutId: 'w1',
-            workoutDate: new Date('2024-11-29'),
-            sets: [
-                { weight: 100, reps: 8 },
-                { weight: 110, reps: 6 },
-                { weight: 120, reps: 4 },
-            ],
-            maxWeight: 120,
-        },
-        {
-            id: '2',
-            workoutId: 'w2',
-            workoutDate: new Date('2024-08-22'),
-            sets: [
-                { weight: 90, reps: 10 },
-                { weight: 100, reps: 8 },
-                { weight: 110, reps: 6 },
-            ],
-            maxWeight: 110,
-        },
-        {
-            id: '3',
-            workoutId: 'w3',
-            workoutDate: new Date('2024-05-15'),
-            sets: [
-                { weight: 80, reps: 10 },
-                { weight: 85, reps: 8 },
-                { weight: 90, reps: 6 },
-            ],
-            maxWeight: 90,
-        },
-    ],
-};
+import { exercisesApi } from '@/app/services/exercises/exerciseService';
 
 export default function ExerciseDetail({ navigation, route }) {
     const { colorScheme } = useAppTheme();
@@ -219,28 +35,24 @@ export default function ExerciseDetail({ navigation, route }) {
 
     const loadExerciseData = async () => {
         setLoading(true);
-        setTimeout(() => {
-            setExercise({
-                id: id,
-                name: 'Жим лежа',
-                muscleGroup: 'chest',
-                type: 'strength',
-                description: 'Базовое упражнение для развития грудных мышц. Лягте на скамью, возьмитесь за гриф шире плеч, опустите штангу к груди и выжмите вверх.',
-                tips: 'Держите лопатки сведенными, не отрывайте таз от скамьи.',
-                photo: null,
-            });
-            setStats(mockStatsData);
-            setLoading(false);
-        }, 500);
+        const [exerciseData, statsData] = await Promise.all([
+            exercisesApi.getExerciseById(id),
+            exercisesApi.getExerciseStats(id),
+        ]);
+        setExercise(exerciseData);
+        setStats(statsData);
+        setLoading(false);
     };
 
-    const loadPeriodData = () => {
+    const loadPeriodData = async () => {
         setChartLoading(true);
-        setTimeout(() => {
-            setChartData(mockChartData[period] || mockChartData['30d']);
-            setHistory(mockHistory[period] || mockHistory['30d']);
-            setChartLoading(false);
-        }, 300);
+        const [chartData, historyData] = await Promise.all([
+            exercisesApi.getExerciseChartData(id, period),
+            exercisesApi.getExerciseHistory(id, period),
+        ]);
+        setChartData(chartData);
+        setHistory(historyData);
+        setChartLoading(false);
     };
 
     const handleEdit = () => {

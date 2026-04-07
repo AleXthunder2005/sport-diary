@@ -1,4 +1,3 @@
-// app/components/excersise/FilterBar.jsx
 import React, { useState } from 'react';
 import { View, Text, Pressable, ScrollView, TextInput } from 'react-native';
 import { Search, Filter, X, Plus } from 'lucide-react-native';
