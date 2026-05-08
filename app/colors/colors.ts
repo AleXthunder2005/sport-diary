@@ -45,9 +45,10 @@ export const themeColors = {
         'switch-background': '#333333',
         success: '#10b981',
         warning: '#f59e0b',
-        info: '#3b82f6',
-    },
-};
+        info: '#3b82f6'
+    }
+}
+
 export const getColor = (theme : keyof typeof themeColors, colorName: keyof typeof themeColors.dark) => {
     return themeColors[theme]?.[colorName] || themeColors.light[colorName];
 };

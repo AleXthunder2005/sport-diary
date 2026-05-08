@@ -7,6 +7,8 @@ import { Switch } from "react-native";
 import { useAppTheme } from "@/app/theme/theme";
 import { preferencesStorage } from "@/app/storages/preferencesStorage";
 import { getColor } from "@/app/colors/colors";
+import { WeatherWidget } from "@/app/components/wheather/WeatherWidget";
+import { NotificationSettings } from "../../components/profile/NotificationSettings";
 
 export const ProfileHome = () => {
     const { toggleTheme, colorScheme } = useAppTheme();
@@ -61,7 +63,6 @@ export const ProfileHome = () => {
                         {/* Animated Avatar Container */}
                         <View className="relative mb-4">
                             <View className="absolute inset-0 bg-primary/20 rounded-full blur-xl scale-110" />
-                            {/* Улучшенный аватар с контрастным фоном */}
                             <View className="w-28 h-28 rounded-full justify-center items-center shadow-lg" style={{ backgroundColor: isDark ? colors.primaryForeground : colors.primary }}>
                                 <User size={52} color={isDark ? colors.primary : colors.primaryForeground} />
                             </View>
@@ -78,6 +79,9 @@ export const ProfileHome = () => {
                         </Text>
                     </View>
                 </View>
+
+                {/* Weather Widget */}
+                <WeatherWidget isDark={isDark} />
 
                 {/* Stats Cards Row */}
                 <View className="flex-row gap-4 mb-6">
@@ -141,7 +145,8 @@ export const ProfileHome = () => {
                             </View>
                         </View>
 
-                        <View className="pt-2">
+                        {/* Theme Switch */}
+                        <View className="pt-2 mb-6">
                             <View className="flex-row items-center justify-between p-4 bg-input-background rounded-xl border border-border">
                                 <View className="flex-row items-center gap-3">
                                     {isDark ? (
@@ -169,6 +174,11 @@ export const ProfileHome = () => {
                                     ios_backgroundColor={colors.switchBackground}
                                 />
                             </View>
+                        </View>
+
+                        {/* 👇 НАСТРОЙКИ УВЕДОМЛЕНИЙ - ДОБАВЛЕНЫ ЗДЕСЬ */}
+                        <View className="border-t border-border pt-6">
+                            <NotificationSettings isDark={isDark} />
                         </View>
                     </View>
                 </View>

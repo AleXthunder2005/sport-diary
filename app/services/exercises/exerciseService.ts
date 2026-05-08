@@ -1,4 +1,3 @@
-// processes/exercises/exercisesProcesses.ts
 import { Exercise, ExerciseStats, ExerciseHistory } from '@/app/entities/exercises.types';
 
 // Mock data for exercises list
