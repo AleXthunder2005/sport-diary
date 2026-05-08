@@ -15,6 +15,7 @@ import { preferencesStorage } from "@/app/storages/preferencesStorage";
 import { Appearance, View, ActivityIndicator } from "react-native";
 import { AppContextProvider } from "@/app/contexts/AppContext";
 import { getCurrentUserId, onAuthStateChange } from "@/app/supabase/supabaseClient";
+import { authService } from "@/app/services/auth/authService";
 
 export default function App() {
     const { colorScheme, setColorScheme } = useColorScheme();
@@ -42,12 +43,22 @@ export default function App() {
                 }
                 console.log("saved lang: " + savedLang);
 
-                // auth
-                const userId = await getCurrentUserId();
-                console.log("[App] Initial auth check, userId:", userId);
-                setIsAuthenticated(!!userId);
+                // Пробуем восстановить сессию
+                console.log("[App] Checking for existing session...");
+                const hasSession = await authService.checkAndRestoreSession();
+                console.log("[App] Session check result:", hasSession);
+
+                if (hasSession) {
+                    const userId = await getCurrentUserId();
+                    console.log("[App] Session restored, userId:", userId);
+                    setIsAuthenticated(true);
+                } else {
+                    console.log("[App] No session found");
+                    setIsAuthenticated(false);
+                }
             } catch (e) {
                 console.log("Init error", e);
+                setIsAuthenticated(false);
             } finally {
                 setIsReady(true);
             }

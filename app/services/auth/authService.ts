@@ -2,27 +2,45 @@ import { Alert } from 'react-native';
 import { authApi } from '@/app/api/auth/authApi';
 
 class AuthService {
+    async checkAndRestoreSession(): Promise<boolean> {
+        console.log('[AuthService] checkAndRestoreSession called');
+        try {
+            const session = await authApi.getSession();
+            if (session) {
+                console.log('[AuthService] Session exists, refreshing...');
+                const refreshed = await authApi.refreshSession();
+                return !!refreshed;
+            }
+            console.log('[AuthService] No session found');
+            return false;
+        } catch (error: any) {
+            console.error('[AuthService] checkAndRestoreSession error:', error);
+            return false;
+        }
+    }
+
     async signUp(email: string, password: string, name: string): Promise<boolean> {
-        console.log('[AuthService] signUp called, email:', email, 'name:', name);
+        console.log('[AuthService] signUp called, email:', email);
 
         if (!email || !password || !name) {
-            console.log('[AuthService] signUp: missing fields');
             Alert.alert('Ошибка', 'Заполните все поля');
             return false;
         }
 
         if (password.length < 6) {
-            console.log('[AuthService] signUp: password too short');
             Alert.alert('Ошибка', 'Пароль должен быть не менее 6 символов');
             return false;
         }
 
         try {
             const data = await authApi.signUp(email, password, name);
-            console.log('[AuthService] signUp success');
+            console.log('[AuthService] signUp result:', !!data.session);
 
-            if (data.user && data.session) {
-                Alert.alert('Успех', 'Регистрация прошла успешно! Проверьте почту для подтверждения.');
+            if (data.session) {
+                Alert.alert('Успех', 'Регистрация прошла успешно!');
+                return true;
+            } else if (data.user) {
+                Alert.alert('Успех', 'Регистрация прошла! Проверьте почту для подтверждения.');
                 return true;
             }
 
@@ -30,8 +48,10 @@ class AuthService {
         } catch (error: any) {
             console.error('[AuthService] signUp error:', error);
 
-            if (error.message.includes('already registered')) {
-                Alert.alert('Ошибка', 'Пользователь с такой почтой уже существует');
+            if (error.message?.includes('already registered')) {
+                Alert.alert('Ошибка', 'Пользователь с такой почтой уже зарегистрирован');
+            } else if (error.message?.includes('network')) {
+                Alert.alert('Ошибка', 'Проблема с сетью. Проверьте подключение к интернету.');
             } else {
                 Alert.alert('Ошибка', error.message || 'Не удалось зарегистрироваться');
             }
@@ -43,20 +63,27 @@ class AuthService {
         console.log('[AuthService] signIn called, email:', email);
 
         if (!email || !password) {
-            console.log('[AuthService] signIn: missing fields');
             Alert.alert('Ошибка', 'Заполните все поля');
             return false;
         }
 
         try {
-            await authApi.signIn(email, password);
-            console.log('[AuthService] signIn success');
-            return true;
+            const data = await authApi.signIn(email, password);
+            console.log('[AuthService] signIn result:', !!data.session);
+
+            if (data.session) {
+                return true;
+            }
+
+            Alert.alert('Ошибка', 'Не удалось войти');
+            return false;
         } catch (error: any) {
             console.error('[AuthService] signIn error:', error);
 
-            if (error.message.includes('Invalid login credentials')) {
+            if (error.message?.includes('Invalid login credentials')) {
                 Alert.alert('Ошибка', 'Неверный email или пароль');
+            } else if (error.message?.includes('Email not confirmed')) {
+                Alert.alert('Ошибка', 'Email не подтверждён. Проверьте почту.');
             } else {
                 Alert.alert('Ошибка', error.message || 'Не удалось войти');
             }
@@ -79,20 +106,27 @@ class AuthService {
         console.log('[AuthService] resetPassword called, email:', email);
 
         if (!email) {
-            console.log('[AuthService] resetPassword: no email');
             Alert.alert('Ошибка', 'Введите email');
             return false;
         }
 
         try {
             await authApi.resetPassword(email);
-            console.log('[AuthService] resetPassword success');
             Alert.alert('Успех', 'Инструкция по восстановлению пароля отправлена на почту');
             return true;
         } catch (error: any) {
             console.error('[AuthService] resetPassword error:', error);
             Alert.alert('Ошибка', error.message || 'Не удалось отправить инструкцию');
             return false;
+        }
+    }
+
+    async getCurrentUserEmail(): Promise<string | null> {
+        try {
+            const session = await authApi.getSession();
+            return session?.user?.email || null;
+        } catch (error) {
+            return null;
         }
     }
 }

@@ -19,7 +19,7 @@ class AuthApi {
             throw error;
         }
 
-        console.log('[AuthApi] signUp success, userId:', data.user?.id);
+        console.log('[AuthApi] signUp success, userId:', data.user?.id, 'session:', !!data.session);
         return data;
     }
 
@@ -36,7 +36,7 @@ class AuthApi {
             throw error;
         }
 
-        console.log('[AuthApi] signIn success, userId:', data.user?.id);
+        console.log('[AuthApi] signIn success, userId:', data.user?.id, 'session:', !!data.session);
         return data;
     }
 
@@ -63,6 +63,32 @@ class AuthApi {
         }
 
         console.log('[AuthApi] resetPassword success');
+    }
+
+    async getSession() {
+        console.log('[AuthApi] getSession called');
+        const { data: { session }, error } = await supabase.auth.getSession();
+
+        if (error) {
+            console.error('[AuthApi] getSession error:', error);
+            return null;
+        }
+
+        console.log('[AuthApi] getSession result:', session ? 'session exists' : 'no session');
+        return session;
+    }
+
+    async refreshSession() {
+        console.log('[AuthApi] refreshSession called');
+        const { data: { session }, error } = await supabase.auth.refreshSession();
+
+        if (error) {
+            console.error('[AuthApi] refreshSession error:', error);
+            return null;
+        }
+
+        console.log('[AuthApi] refreshSession result:', session ? 'refreshed' : 'failed');
+        return session;
     }
 }
 
