@@ -5,7 +5,7 @@ import { useAppTheme } from '@/app/theme/theme';
 import { useTranslation } from 'react-i18next';
 import { getColor } from '@/app/colors/colors';
 import { workoutService } from '@/app/services/workout/workoutService';
-import { exercisesApi } from '@/app/services/exercises/exerciseService';
+import { exercisesService } from '@/app/services/exercises/exerciseService';
 
 export default function WorkoutHome({ navigation }) {
     const { colorScheme } = useAppTheme();
@@ -31,7 +31,7 @@ export default function WorkoutHome({ navigation }) {
             workoutService.getActiveWorkout(),
             workoutService.getWorkoutStats(),
             workoutService.getWorkoutHistory('week'),
-            exercisesApi.getExercises(),
+            exercisesService.getExercises(),
         ]);
         setActiveWorkout(active);
         setStats(workoutStats);

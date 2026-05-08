@@ -1,333 +1,265 @@
-// services/workout/workoutService.ts
+import { Alert } from 'react-native';
+import { workoutsApi } from '@/app/api/workouts/workoutsApi';
+import { supabase, getCurrentUserId } from '@/app/supabase/supabaseClient';
 import { Workout, WorkoutExercise, WorkoutSet, WorkoutSummary, WorkoutStats } from '@/app/entities/workout';
 
-// Mock data for workouts history
-const mockWorkouts: Workout[] = [
-    {
-        id: '1',
-        name: 'Тренировка 08.04',
-        startTime: new Date('2024-04-08T18:00:00'),
-        endTime: new Date('2024-04-08T19:30:00'),
-        duration: 5400,
-        exercises: [
-            {
-                id: 'we1',
-                exerciseId: '1',
-                exerciseName: 'Жим лежа',
-                muscleGroup: 'chest',
-                sets: [
-                    { id: 's1', exerciseId: '1', weight: 80, reps: 10, completed: true, order: 0 },
-                    { id: 's2', exerciseId: '1', weight: 90, reps: 8, completed: true, order: 1 },
-                    { id: 's3', exerciseId: '1', weight: 100, reps: 6, completed: true, order: 2 },
-                ],
-                order: 0,
-            },
-            {
-                id: 'we2',
-                exerciseId: '2',
-                exerciseName: 'Приседания',
-                muscleGroup: 'legs',
-                sets: [
-                    { id: 's4', exerciseId: '2', weight: 100, reps: 10, completed: true, order: 0 },
-                    { id: 's5', exerciseId: '2', weight: 110, reps: 8, completed: true, order: 1 },
-                    { id: 's6', exerciseId: '2', weight: 120, reps: 6, completed: true, order: 2 },
-                ],
-                order: 1,
-            },
-        ],
-        isActive: false,
-        totalVolume: 9900,
-        totalSets: 6,
-        totalExercises: 2,
-        createdAt: new Date('2024-04-08'),
-        updatedAt: new Date('2024-04-08'),
-    },
-    {
-        id: '2',
-        name: 'Тренировка 05.04',
-        startTime: new Date('2024-04-05T17:30:00'),
-        endTime: new Date('2024-04-05T18:45:00'),
-        duration: 4500,
-        exercises: [
-            {
-                id: 'we3',
-                exerciseId: '1',
-                exerciseName: 'Жим лежа',
-                muscleGroup: 'chest',
-                sets: [
-                    { id: 's7', exerciseId: '1', weight: 70, reps: 12, completed: true, order: 0 },
-                    { id: 's8', exerciseId: '1', weight: 80, reps: 10, completed: true, order: 1 },
-                    { id: 's9', exerciseId: '1', weight: 90, reps: 8, completed: true, order: 2 },
-                ],
-                order: 0,
-            },
-        ],
-        isActive: false,
-        totalVolume: 2940,
-        totalSets: 3,
-        totalExercises: 1,
-        createdAt: new Date('2024-04-05'),
-        updatedAt: new Date('2024-04-05'),
-    },
-];
-
-let activeWorkout: Workout | null = null;
-
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-
 export const workoutService = {
-    // Get active workout
-    getActiveWorkout: async (): Promise<Workout | null> => {
-        await delay(300);
-        return activeWorkout;
+    async getActiveWorkout(): Promise<Workout | null> {
+        console.log('[WorkoutService] getActiveWorkout called');
+        try {
+            const userId = await getCurrentUserId();
+            console.log('[WorkoutService] getActiveWorkout userId:', userId);
+            if (!userId) return null;
+
+            const workout = await workoutsApi.fetchActiveWorkout(userId);
+            if (!workout) return null;
+
+            return await buildWorkout(workout);
+        } catch (error: any) {
+            console.error('[WorkoutService] getActiveWorkout error:', error);
+            return null;
+        }
     },
 
-    // Start new workout
-    startWorkout: async (name?: string): Promise<Workout> => {
-        await delay(500);
+    async startWorkout(name?: string): Promise<Workout> {
+        console.log('[WorkoutService] startWorkout called, name:', name);
+        const userId = await getCurrentUserId();
+        if (!userId) {
+            Alert.alert('Ошибка', 'Пользователь не авторизован');
+            throw new Error('User not authenticated');
+        }
+
         const now = new Date();
-        activeWorkout = {
-            id: Date.now().toString(),
-            name: name || `Тренировка ${now.toLocaleDateString('ru-RU')}`,
-            startTime: now,
+        const workoutName = name || `Тренировка ${now.toLocaleDateString('ru-RU')}`;
+        const data = await workoutsApi.insertWorkout(userId, workoutName);
+        console.log('[WorkoutService] startWorkout success, id:', data.id);
+
+        return {
+            id: data.id,
+            name: data.name,
+            startTime: new Date(data.start_time),
             exercises: [],
             isActive: true,
-            createdAt: now,
-            updatedAt: now,
+            createdAt: new Date(data.created_at),
+            updatedAt: new Date(data.updated_at),
         };
-        return activeWorkout;
     },
 
-    // Add exercise to workout
-    addExerciseToWorkout: async (workoutId: string, exercise: any): Promise<Workout> => {
-        await delay(300);
-        if (activeWorkout && activeWorkout.id === workoutId) {
-            const newExercise: WorkoutExercise = {
-                id: Date.now().toString(),
-                exerciseId: exercise.id,
-                exerciseName: exercise.name,
-                muscleGroup: exercise.muscleGroup,
-                exercisePhoto: exercise.photo,
-                sets: [],
-                order: activeWorkout.exercises.length,
-            };
-            activeWorkout.exercises.push(newExercise);
-            activeWorkout.updatedAt = new Date();
+    async addExerciseToWorkout(workoutId: string, exercise: any): Promise<Workout> {
+        console.log('[WorkoutService] addExerciseToWorkout called, workoutId:', workoutId, 'exercise:', exercise.name);
+        const maxOrder = await workoutsApi.fetchMaxExerciseOrder(workoutId);
+        const nextOrder = maxOrder + 1;
+        await workoutsApi.insertWorkoutExercise(workoutId, exercise, nextOrder);
+        return this.getWorkoutById(workoutId) as Promise<Workout>;
+    },
+
+    async addSetToExercise(workoutId: string, exerciseId: string): Promise<Workout> {
+        console.log('[WorkoutService] addSetToExercise called, exerciseId:', exerciseId);
+        const maxOrder = await workoutsApi.fetchMaxSetOrder(exerciseId);
+        const nextOrder = maxOrder + 1;
+        await workoutsApi.insertSet(exerciseId, nextOrder);
+        return this.getWorkoutById(workoutId) as Promise<Workout>;
+    },
+
+    async updateSet(workoutId: string, exerciseId: string, setId: string, data: Partial<WorkoutSet>): Promise<Workout> {
+        console.log('[WorkoutService] updateSet called, setId:', setId);
+        const updateData: any = {};
+        if (data.weight !== undefined) updateData.weight = data.weight;
+        if (data.reps !== undefined) updateData.reps = data.reps;
+        if (data.completed !== undefined) {
+            updateData.completed = data.completed;
+            if (data.completed) updateData.completed_at = new Date().toISOString();
         }
-        return activeWorkout!;
+        await workoutsApi.updateSetById(setId, updateData);
+        return this.getWorkoutById(workoutId) as Promise<Workout>;
     },
 
-    // Add set to exercise
-    addSetToExercise: async (workoutId: string, exerciseId: string): Promise<Workout> => {
-        await delay(200);
-        if (activeWorkout && activeWorkout.id === workoutId) {
-            const exercise = activeWorkout.exercises.find(e => e.id === exerciseId);
-            if (exercise) {
-                const newSet: WorkoutSet = {
-                    id: Date.now().toString(),
-                    exerciseId: exercise.exerciseId,
-                    weight: null,
-                    reps: null,
-                    completed: false,
-                    order: exercise.sets.length,
-                };
-                exercise.sets.push(newSet);
-                activeWorkout.updatedAt = new Date();
-            }
-        }
-        return activeWorkout!;
+    async deleteSet(workoutId: string, exerciseId: string, setId: string): Promise<Workout> {
+        console.log('[WorkoutService] deleteSet called, setId:', setId);
+        await workoutsApi.deleteSetById(setId);
+        await workoutsApi.reorderSetsByExerciseId(exerciseId);
+        return this.getWorkoutById(workoutId) as Promise<Workout>;
     },
 
-    // Update set
-    updateSet: async (workoutId: string, exerciseId: string, setId: string, data: Partial<WorkoutSet>): Promise<Workout> => {
-        await delay(200);
-        if (activeWorkout && activeWorkout.id === workoutId) {
-            const exercise = activeWorkout.exercises.find(e => e.id === exerciseId);
-            if (exercise) {
-                const set = exercise.sets.find(s => s.id === setId);
-                if (set) {
-                    Object.assign(set, data);
-                    if (set.completed && !set.completedAt) {
-                        set.completedAt = new Date();
-                    }
-                    activeWorkout.updatedAt = new Date();
+    async deleteExercise(workoutId: string, exerciseId: string): Promise<Workout> {
+        console.log('[WorkoutService] deleteExercise called, exerciseId:', exerciseId);
+        await workoutsApi.deleteWorkoutExerciseById(exerciseId);
+        await workoutsApi.reorderExercisesByWorkoutId(workoutId);
+        return this.getWorkoutById(workoutId) as Promise<Workout>;
+    },
+
+    async moveExercise(workoutId: string, exerciseId: string, direction: 'up' | 'down'): Promise<Workout> {
+        console.log('[WorkoutService] moveExercise called');
+        const exercises = await workoutsApi.fetchWorkoutExercises(workoutId);
+        const currentIndex = exercises.findIndex((e: any) => e.id === exerciseId);
+        if (currentIndex === -1) return this.getWorkoutById(workoutId) as Promise<Workout>;
+
+        const swapIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
+        if (swapIndex < 0 || swapIndex >= exercises.length) return this.getWorkoutById(workoutId) as Promise<Workout>;
+
+        const currentOrder = exercises[currentIndex].order_index;
+        const swapOrder = exercises[swapIndex].order_index;
+
+        await Promise.all([
+            supabase.from('workout_exercises').update({ order_index: swapOrder }).eq('id', exercises[currentIndex].id),
+            supabase.from('workout_exercises').update({ order_index: currentOrder }).eq('id', exercises[swapIndex].id),
+        ]);
+        return this.getWorkoutById(workoutId) as Promise<Workout>;
+    },
+
+    async updateWorkoutName(workoutId: string, name: string): Promise<Workout> {
+        console.log('[WorkoutService] updateWorkoutName called');
+        await workoutsApi.updateWorkoutNameById(workoutId, name);
+        return this.getWorkoutById(workoutId) as Promise<Workout>;
+    },
+
+    async finishWorkout(workoutId: string): Promise<Workout> {
+        console.log('[WorkoutService] finishWorkout called, workoutId:', workoutId);
+        const workout = await this.getWorkoutById(workoutId);
+        if (!workout) throw new Error('Workout not found');
+
+        // Удаляем пустые подходы из базы данных
+        for (const exercise of workout.exercises) {
+            for (const set of exercise.sets) {
+                if (!set.completed || !set.weight || !set.reps) {
+                    console.log('[WorkoutService] Deleting empty set:', set.id);
+                    await workoutsApi.deleteSetById(set.id);
                 }
             }
         }
-        return activeWorkout!;
-    },
 
-    // Delete set
-    deleteSet: async (workoutId: string, exerciseId: string, setId: string): Promise<Workout> => {
-        await delay(200);
-        if (activeWorkout && activeWorkout.id === workoutId) {
-            const exercise = activeWorkout.exercises.find(e => e.id === exerciseId);
-            if (exercise) {
-                exercise.sets = exercise.sets.filter(s => s.id !== setId);
-                exercise.sets.forEach((set, idx) => { set.order = idx; });
-                activeWorkout.updatedAt = new Date();
-            }
-        }
-        return activeWorkout!;
-    },
+        // Перезагружаем тренировку после удаления пустых подходов
+        const cleanedWorkout = await this.getWorkoutById(workoutId);
+        if (!cleanedWorkout) throw new Error('Workout not found after cleaning');
 
-    // Delete exercise from workout
-    deleteExercise: async (workoutId: string, exerciseId: string): Promise<Workout> => {
-        await delay(300);
-        if (activeWorkout && activeWorkout.id === workoutId) {
-            activeWorkout.exercises = activeWorkout.exercises.filter(e => e.id !== exerciseId);
-            activeWorkout.exercises.forEach((ex, idx) => { ex.order = idx; });
-            activeWorkout.updatedAt = new Date();
-        }
-        return activeWorkout!;
-    },
-
-    // Move exercise
-    moveExercise: async (workoutId: string, exerciseId: string, direction: 'up' | 'down'): Promise<Workout> => {
-        await delay(200);
-        if (activeWorkout && activeWorkout.id === workoutId) {
-            const index = activeWorkout.exercises.findIndex(e => e.id === exerciseId);
-            if (direction === 'up' && index > 0) {
-                [activeWorkout.exercises[index - 1], activeWorkout.exercises[index]] =
-                    [activeWorkout.exercises[index], activeWorkout.exercises[index - 1]];
-            } else if (direction === 'down' && index < activeWorkout.exercises.length - 1) {
-                [activeWorkout.exercises[index + 1], activeWorkout.exercises[index]] =
-                    [activeWorkout.exercises[index], activeWorkout.exercises[index + 1]];
-            }
-            activeWorkout.exercises.forEach((ex, idx) => { ex.order = idx; });
-            activeWorkout.updatedAt = new Date();
-        }
-        return activeWorkout!;
-    },
-
-    // Update workout name
-    updateWorkoutName: async (workoutId: string, name: string): Promise<Workout> => {
-        await delay(200);
-        if (activeWorkout && activeWorkout.id === workoutId) {
-            activeWorkout.name = name;
-            activeWorkout.updatedAt = new Date();
-        }
-        return activeWorkout!;
-    },
-
-    // Finish workout
-    finishWorkout: async (workoutId: string): Promise<Workout> => {
-        await delay(500);
-        if (activeWorkout && activeWorkout.id === workoutId) {
-            activeWorkout.endTime = new Date();
-            activeWorkout.duration = Math.floor((activeWorkout.endTime.getTime() - activeWorkout.startTime.getTime()) / 1000);
-            activeWorkout.isActive = false;
-
-            // Calculate totals
-            let totalVolume = 0;
-            let totalSets = 0;
-            activeWorkout.exercises.forEach(exercise => {
-                exercise.sets.forEach(set => {
-                    if (set.completed && set.weight && set.reps) {
-                        totalVolume += set.weight * set.reps;
-                        totalSets++;
-                    }
-                });
+        let totalVolume = 0;
+        let totalSets = 0;
+        cleanedWorkout.exercises.forEach(ex => {
+            ex.sets.forEach(set => {
+                if (set.completed && set.weight && set.reps) {
+                    totalVolume += set.weight * set.reps;
+                    totalSets++;
+                }
             });
-            activeWorkout.totalVolume = totalVolume;
-            activeWorkout.totalSets = totalSets;
-            activeWorkout.totalExercises = activeWorkout.exercises.length;
+        });
 
-            // Save to history
-            mockWorkouts.unshift({ ...activeWorkout });
-            const completedWorkout = activeWorkout;
-            activeWorkout = null;
-            return completedWorkout;
-        }
-        throw new Error('Workout not found');
+        const endTime = new Date();
+        const duration = Math.floor((endTime.getTime() - cleanedWorkout.startTime.getTime()) / 1000);
+
+        await workoutsApi.updateWorkoutFinish(
+            workoutId,
+            endTime.toISOString(),
+            duration,
+            totalVolume,
+            totalSets,
+            cleanedWorkout.exercises.filter(ex => ex.sets.length > 0).length
+        );
+
+        return this.getWorkoutById(workoutId) as Promise<Workout>;
     },
 
-    // Get workout history
-    getWorkoutHistory: async (period?: 'week' | 'month' | 'year' | 'all'): Promise<WorkoutSummary[]> => {
-        await delay(300);
-        let filtered = [...mockWorkouts];
-        const now = new Date();
+    async getWorkoutHistory(period?: 'week' | 'month' | 'year' | 'all'): Promise<WorkoutSummary[]> {
+        console.log('[WorkoutService] getWorkoutHistory called, period:', period);
+        const userId = await getCurrentUserId();
+        if (!userId) return [];
 
-        if (period === 'week') {
-            const weekAgo = new Date(now.setDate(now.getDate() - 7));
-            filtered = filtered.filter(w => w.startTime >= weekAgo);
-        } else if (period === 'month') {
-            const monthAgo = new Date(now.setMonth(now.getMonth() - 1));
-            filtered = filtered.filter(w => w.startTime >= monthAgo);
-        } else if (period === 'year') {
-            const yearAgo = new Date(now.setFullYear(now.getFullYear() - 1));
-            filtered = filtered.filter(w => w.startTime >= yearAgo);
-        }
-
-        return filtered.map(w => ({
+        const data = await workoutsApi.fetchWorkoutHistory(userId, period === 'all' ? undefined : period);
+        return data.map((w: any) => ({
             id: w.id,
             name: w.name,
-            date: w.startTime,
+            date: new Date(w.start_time),
             duration: w.duration || 0,
-            totalExercises: w.totalExercises || 0,
-            totalSets: w.totalSets || 0,
-            totalVolume: w.totalVolume || 0,
+            totalExercises: w.total_exercises || 0,
+            totalSets: w.total_sets || 0,
+            totalVolume: w.total_volume || 0,
         }));
     },
 
-    // Get workout by id
-    getWorkoutById: async (id: string): Promise<Workout | null> => {
-        await delay(300);
-        return mockWorkouts.find(w => w.id === id) || null;
+    async getWorkoutById(id: string): Promise<Workout | null> {
+        console.log('[WorkoutService] getWorkoutById called, id:', id);
+        const workout = await workoutsApi.fetchWorkoutById(id);
+        if (!workout) return null;
+        return await buildWorkout(workout);
     },
 
-    // Update workout (for editing)
-    updateWorkout: async (id: string, data: Partial<Workout>): Promise<Workout> => {
-        await delay(500);
-        const index = mockWorkouts.findIndex(w => w.id === id);
-        if (index !== -1) {
-            mockWorkouts[index] = { ...mockWorkouts[index], ...data, updatedAt: new Date() };
-            return mockWorkouts[index];
+    async updateWorkout(id: string, data: Partial<Workout>): Promise<Workout> {
+        console.log('[WorkoutService] updateWorkout called, id:', id);
+        if (data.name) {
+            await workoutsApi.updateWorkoutNameById(id, data.name);
         }
-        throw new Error('Workout not found');
+        return this.getWorkoutById(id) as Promise<Workout>;
     },
 
-    // Delete workout
-    deleteWorkout: async (id: string): Promise<void> => {
-        await delay(500);
-        const index = mockWorkouts.findIndex(w => w.id === id);
-        if (index !== -1) {
-            mockWorkouts.splice(index, 1);
-        }
+    async deleteWorkout(id: string): Promise<void> {
+        console.log('[WorkoutService] deleteWorkout called, id:', id);
+        await workoutsApi.deleteWorkoutById(id);
     },
 
-    // Get workout stats
-    getWorkoutStats: async (): Promise<WorkoutStats> => {
-        await delay(300);
-        const totalWorkouts = mockWorkouts.length;
-        const totalSets = mockWorkouts.reduce((sum, w) => sum + (w.totalSets || 0), 0);
-        const totalVolume = mockWorkouts.reduce((sum, w) => sum + (w.totalVolume || 0), 0);
+    async getWorkoutStats(): Promise<WorkoutStats> {
+        console.log('[WorkoutService] getWorkoutStats called');
+        const userId = await getCurrentUserId();
+        if (!userId) return { totalWorkouts: 0, totalSets: 0, totalVolume: 0, averageDuration: 0, mostFrequentExercise: '' };
+
+        const workouts = await workoutsApi.fetchWorkoutStats(userId);
+        const totalWorkouts = workouts.length;
+        const totalSets = workouts.reduce((sum: number, w: any) => sum + (w.total_sets || 0), 0);
+        const totalVolume = workouts.reduce((sum: number, w: any) => sum + (w.total_volume || 0), 0);
         const averageDuration = totalWorkouts > 0
-            ? mockWorkouts.reduce((sum, w) => sum + (w.duration || 0), 0) / totalWorkouts
+            ? workouts.reduce((sum: number, w: any) => sum + (w.duration || 0), 0) / totalWorkouts
             : 0;
 
-        return {
-            totalWorkouts,
-            totalSets,
-            totalVolume,
-            averageDuration,
-            mostFrequentExercise: 'Жим лежа', // Mock
-        };
+        return { totalWorkouts, totalSets, totalVolume, averageDuration, mostFrequentExercise: '—' };
     },
 
-    // Check if workout has incomplete sets
-    hasIncompleteSets: (workout: Workout): boolean => {
-        return workout.exercises.some(exercise =>
-            exercise.sets.some(set => !set.completed || !set.weight || !set.reps)
+    hasIncompleteSets(workout: Workout): boolean {
+        return workout.exercises.some(ex =>
+            ex.sets.some(set => !set.completed || !set.weight || !set.reps)
         );
     },
 
-    // Remove incomplete sets
-    removeIncompleteSets: (workout: Workout): Workout => {
-        workout.exercises.forEach(exercise => {
-            exercise.sets = exercise.sets.filter(set => set.completed && set.weight && set.reps);
-        });
-        workout.exercises = workout.exercises.filter(exercise => exercise.sets.length > 0);
-        return workout;
+    removeIncompleteSets(workout: Workout): Workout {
+        const cleaned = { ...workout };
+        cleaned.exercises = workout.exercises.map(ex => ({
+            ...ex,
+            sets: ex.sets.filter(set => set.completed && set.weight && set.reps)
+        }));
+        cleaned.exercises = cleaned.exercises.filter(ex => ex.sets.length > 0);
+        return cleaned;
     },
 };
+
+async function buildWorkout(workout: any): Promise<Workout> {
+    const exercises = await workoutsApi.fetchWorkoutExercises(workout.id);
+    return {
+        id: workout.id,
+        name: workout.name,
+        startTime: new Date(workout.start_time),
+        endTime: workout.end_time ? new Date(workout.end_time) : undefined,
+        duration: workout.duration,
+        exercises: exercises.map((ex: any) => ({
+            id: ex.id,
+            exerciseId: ex.exercise_id,
+            exerciseName: ex.exercise_name,
+            muscleGroup: ex.muscle_group,
+            exercisePhoto: ex.exercise_photo,
+            sets: (ex.sets || [])
+                .sort((a: any, b: any) => a.order_index - b.order_index)
+                .map((s: any) => ({
+                    id: s.id,
+                    exerciseId: ex.id,
+                    weight: s.weight,
+                    reps: s.reps,
+                    completed: s.completed,
+                    completedAt: s.completed_at ? new Date(s.completed_at) : undefined,
+                    order: s.order_index,
+                })),
+            order: ex.order_index,
+        })),
+        isActive: workout.is_active,
+        totalVolume: workout.total_volume,
+        totalSets: workout.total_sets,
+        totalExercises: workout.total_exercises,
+        createdAt: new Date(workout.created_at),
+        updatedAt: new Date(workout.updated_at),
+    };
+}

@@ -1,4 +1,3 @@
-// app/screens/excersise/ExerciseDetail.jsx
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, Pressable, ActivityIndicator } from 'react-native';
 import { useAppTheme } from '@/app/theme/theme';
@@ -7,7 +6,7 @@ import { Edit3, ArrowLeft } from 'lucide-react-native';
 import { ExerciseStatsChart, ExerciseHistoryList } from '@/app/components/excersise';
 import { getColor } from '@/app/colors/colors';
 import { getMuscleGroupById, getExerciseTypeById } from '@/app/entities/exercisesMetadata';
-import { exercisesApi } from '@/app/services/exercises/exerciseService';
+import { exercisesService } from '@/app/services/exercises/exerciseService';
 
 export default function ExerciseDetail({ navigation, route }) {
     const { colorScheme } = useAppTheme();
@@ -36,8 +35,8 @@ export default function ExerciseDetail({ navigation, route }) {
     const loadExerciseData = async () => {
         setLoading(true);
         const [exerciseData, statsData] = await Promise.all([
-            exercisesApi.getExerciseById(id),
-            exercisesApi.getExerciseStats(id),
+            exercisesService.getExerciseById(id),
+            exercisesService.getExerciseStats(id),
         ]);
         setExercise(exerciseData);
         setStats(statsData);
@@ -47,8 +46,8 @@ export default function ExerciseDetail({ navigation, route }) {
     const loadPeriodData = async () => {
         setChartLoading(true);
         const [chartData, historyData] = await Promise.all([
-            exercisesApi.getExerciseChartData(id, period),
-            exercisesApi.getExerciseHistory(id, period),
+            exercisesService.getExerciseChartData(id, period),
+            exercisesService.getExerciseHistory(id, period),
         ]);
         setChartData(chartData);
         setHistory(historyData);
@@ -60,7 +59,11 @@ export default function ExerciseDetail({ navigation, route }) {
     };
 
     const handleWorkoutPress = (workoutId) => {
-        navigation.navigate('WorkoutDetail', { id: workoutId });
+        // Навигация в другой таб
+        navigation.navigate('WorkoutTab', {
+            screen: 'WorkoutDetail',
+            params: { workoutId: workoutId }
+        });
     };
 
     const handlePeriodChange = (newPeriod) => {

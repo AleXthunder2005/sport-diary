@@ -1,11 +1,11 @@
-// app/screens/excersise/ExercisesHome.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, ScrollView, Pressable, ActivityIndicator } from 'react-native';
 import { useAppTheme } from '@/app/theme/theme';
 import { useTranslation } from 'react-i18next';
 import { ExerciseCard, FilterBar } from '@/app/components/excersise';
 import { getColor } from '@/app/colors/colors';
-import { exercisesApi } from '@/app/services/exercises/exerciseService';
+import { exercisesService } from '@/app/services/exercises/exerciseService';
+import { useFocusEffect } from '@react-navigation/native';
 
 export default function ExercisesHome({ navigation }) {
     const { colorScheme } = useAppTheme();
@@ -18,9 +18,13 @@ export default function ExercisesHome({ navigation }) {
     const [selectedMuscle, setSelectedMuscle] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        loadExercises();
-    }, []);
+    // Перезагружаем данные при каждом фокусе на экран
+    useFocusEffect(
+        useCallback(() => {
+            console.log('[ExercisesHome] Screen focused, loading exercises...');
+            loadExercises();
+        }, [])
+    );
 
     useEffect(() => {
         filterExercises();
@@ -28,7 +32,8 @@ export default function ExercisesHome({ navigation }) {
 
     const loadExercises = async () => {
         setLoading(true);
-        const data = await exercisesApi.getExercises();
+        const data = await exercisesService.getExercises();
+        console.log('[ExercisesHome] Loaded exercises count:', data.length);
         setExercises(data);
         setLoading(false);
     };

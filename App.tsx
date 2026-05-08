@@ -2,21 +2,24 @@ import { DarkTheme, DefaultTheme, NavigationContainer } from '@react-navigation/
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { MainTabNavigator } from "@/app/routers/MainTabNavigator";
+import { AuthStackNavigator } from "@/app/routers/AuthStackNavigator";
 
-import { GluestackUIProvider } from 'app/gluestack-ui-provider';
+import { GluestackUIProvider } from '@/app/gluestack-ui-provider';
 import '@/global.css';
-import "app/language/i18n";
+import "@/app/language/i18n";
 
 import { useEffect, useState } from "react";
 import { useColorScheme } from "nativewind";
-import i18n from "app/language/i18n";
+import i18n from "@/app/language/i18n";
 import { preferencesStorage } from "@/app/storages/preferencesStorage";
-import { Appearance } from "react-native";
-import {AppContextProvider} from "@/app/contexts/AppContext";
+import { Appearance, View, ActivityIndicator } from "react-native";
+import { AppContextProvider } from "@/app/contexts/AppContext";
+import { getCurrentUserId, onAuthStateChange } from "@/app/supabase/supabaseClient";
 
 export default function App() {
     const { colorScheme, setColorScheme } = useColorScheme();
     const [isReady, setIsReady] = useState(false);
+    const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
     useEffect(() => {
         const loadSettings = async () => {
@@ -38,6 +41,11 @@ export default function App() {
                     await i18n.changeLanguage(savedLang);
                 }
                 console.log("saved lang: " + savedLang);
+
+                // auth
+                const userId = await getCurrentUserId();
+                console.log("[App] Initial auth check, userId:", userId);
+                setIsAuthenticated(!!userId);
             } catch (e) {
                 console.log("Init error", e);
             } finally {
@@ -46,20 +54,43 @@ export default function App() {
         };
 
         loadSettings();
+
+        // Подписываемся на изменения авторизации
+        const { data: { subscription } } = onAuthStateChange((userId) => {
+            console.log("[App] Auth state changed, userId:", userId);
+            setIsAuthenticated(!!userId);
+        });
+
+        return () => {
+            subscription.unsubscribe();
+        };
     }, []);
 
-    if (!isReady) return null;
+    // Ждём загрузки настроек и проверки авторизации
+    if (!isReady || isAuthenticated === null) {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff' }}>
+                <ActivityIndicator size="large" color="#4A90D9" />
+            </View>
+        );
+    }
 
     return (
-            <GluestackUIProvider mode={colorScheme}>
-                <SafeAreaProvider>
+        <GluestackUIProvider mode={colorScheme}>
+            <SafeAreaProvider>
+                <AppContextProvider>
                     <NavigationContainer
                         theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
                     >
-                        <MainTabNavigator />
+                        {isAuthenticated ? (
+                            <MainTabNavigator />
+                        ) : (
+                            <AuthStackNavigator />
+                        )}
                         <StatusBar style="auto" />
                     </NavigationContainer>
-                </SafeAreaProvider>
-            </GluestackUIProvider>
+                </AppContextProvider>
+            </SafeAreaProvider>
+        </GluestackUIProvider>
     );
 }

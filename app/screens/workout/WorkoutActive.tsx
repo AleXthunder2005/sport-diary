@@ -155,17 +155,16 @@ export default function WorkoutActive({ navigation, route }) {
                     {
                         text: t('workouts.deleteEmptySets'),
                         onPress: async () => {
-                            const cleanedWorkout = workoutService.removeIncompleteSets(workout);
-                            const finishedWorkout = await workoutService.finishWorkout(workout.id);
                             if (timerRef.current) clearInterval(timerRef.current);
+                            const finishedWorkout = await workoutService.finishWorkout(workout.id);
                             navigation.replace('WorkoutSummary', { workoutId: finishedWorkout.id });
                         }
                     }
                 ]
             );
         } else {
-            const finishedWorkout = await workoutService.finishWorkout(workout.id);
             if (timerRef.current) clearInterval(timerRef.current);
+            const finishedWorkout = await workoutService.finishWorkout(workout.id);
             navigation.replace('WorkoutSummary', { workoutId: finishedWorkout.id });
         }
     };

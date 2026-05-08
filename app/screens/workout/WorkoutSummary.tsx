@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, Pressable, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, Pressable, ActivityIndicator, Alert } from 'react-native';
 import { useAppTheme } from '@/app/theme/theme';
 import { useTranslation } from 'react-i18next';
-import { Trophy, Clock, Dumbbell, TrendingUp, CheckCircle, ArrowRight } from 'lucide-react-native';
+import { Trophy, Clock, Dumbbell, TrendingUp, CheckCircle, ArrowRight, MessageCircle, Send } from 'lucide-react-native';
 import { getColor } from '@/app/colors/colors';
 import { workoutService } from '@/app/services/workout/workoutService';
+import { shareToTelegram, shareToWhatsApp, copyToShare } from '@/app/utils/shareWorkout';
 
 export default function WorkoutSummary({ navigation, route }) {
     const { colorScheme } = useAppTheme();
@@ -23,6 +24,10 @@ export default function WorkoutSummary({ navigation, route }) {
         card: getColor(isDark ? 'dark' : 'light', 'card'),
         border: getColor(isDark ? 'dark' : 'light', 'border'),
         success: getColor(isDark ? 'dark' : 'light', 'success'),
+        telegram: '#0088cc',
+        whatsapp: '#25D366',
+        vk: '#0077FF',
+        copy: getColor(isDark ? 'dark' : 'light', 'primary'),
     };
 
     useEffect(() => {
@@ -46,6 +51,21 @@ export default function WorkoutSummary({ navigation, route }) {
     const formatDate = (date) => {
         const d = new Date(date);
         return d.toLocaleDateString(t('locale'), { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+    };
+
+    const handleShareTelegram = async () => {
+        if (!workout) return;
+        await shareToTelegram(workout, t);
+    };
+
+    const handleShareWhatsApp = async () => {
+        if (!workout) return;
+        await shareToWhatsApp(workout, t);
+    };
+
+    const handleCopy = async () => {
+        if (!workout) return;
+        await copyToShare(workout, t);
     };
 
     if (loading || !workout) {
@@ -97,6 +117,39 @@ export default function WorkoutSummary({ navigation, route }) {
                         <Text className="text-foreground text-xl font-bold mt-2">{workout.totalVolume || 0}</Text>
                         <Text className="text-muted-foreground text-xs">{t('workouts.volume')} ({t('units.kg')})</Text>
                     </View>
+                </View>
+
+                {/* Share Buttons */}
+                <Text className="text-foreground font-semibold text-lg mb-3">Поделиться</Text>
+                <View className="flex-row gap-3 mb-6">
+                    {/* Telegram */}
+                    <Pressable
+                        onPress={handleShareTelegram}
+                        className="flex-1 py-3 rounded-xl items-center justify-center"
+                        style={{ backgroundColor: colors.telegram }}
+                    >
+                        <Send size={24} color="#fff" />
+                        <Text className="text-white text-xs mt-1 font-medium">Telegram</Text>
+                    </Pressable>
+
+                    {/* WhatsApp */}
+                    <Pressable
+                        onPress={handleShareWhatsApp}
+                        className="flex-1 py-3 rounded-xl items-center justify-center"
+                        style={{ backgroundColor: colors.whatsapp }}
+                    >
+                        <MessageCircle size={24} color="#fff" />
+                        <Text className="text-white text-xs mt-1 font-medium">WhatsApp</Text>
+                    </Pressable>
+
+                    {/* Copy / Share */}
+                    <Pressable
+                        onPress={handleCopy}
+                        className="flex-1 py-3 rounded-xl items-center justify-center bg-card border border-border/50"
+                    >
+                        <Dumbbell size={24} color={colors.primary} />
+                        <Text className="text-primary text-xs mt-1 font-medium">Ещё</Text>
+                    </Pressable>
                 </View>
 
                 {/* Exercises Summary */}

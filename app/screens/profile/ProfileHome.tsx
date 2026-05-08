@@ -1,14 +1,16 @@
-import React, { useState } from "react";
-import { View, Text, ScrollView } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, Text, ScrollView, Pressable } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { useTranslation } from "react-i18next";
-import { User, Moon, Sun, Globe, Ruler, Weight, Sparkles } from "lucide-react-native";
+import { User, Moon, Sun, Globe, Ruler, Weight, Sparkles, LogOut, Mail } from "lucide-react-native";
 import { Switch } from "react-native";
 import { useAppTheme } from "@/app/theme/theme";
 import { preferencesStorage } from "@/app/storages/preferencesStorage";
 import { getColor } from "@/app/colors/colors";
 import { WeatherWidget } from "@/app/components/wheather/WeatherWidget";
 import { NotificationSettings } from "../../components/profile/NotificationSettings";
+import { getCurrentUser } from "@/app/supabase/supabaseClient";
+import { authService } from "@/app/services/auth/authService";
 
 export const ProfileHome = () => {
     const { toggleTheme, colorScheme } = useAppTheme();
@@ -16,8 +18,19 @@ export const ProfileHome = () => {
 
     const [language, setLanguage] = useState(i18n.language);
     const [isDark, setIsDark] = useState(colorScheme === "dark");
+    const [user, setUser] = useState(null);
 
     const currentTheme = isDark ? 'dark' : 'light';
+
+    useEffect(() => {
+        loadUser();
+    }, []);
+
+    const loadUser = async () => {
+        const currentUser = await getCurrentUser();
+        setUser(currentUser);
+        console.log('[ProfileHome] User loaded:', currentUser?.email);
+    };
 
     const onChangeLanguage = async (lang: string) => {
         setLanguage(lang);
@@ -31,7 +44,12 @@ export const ProfileHome = () => {
         setIsDark(!isDark);
     };
 
-    // Получаем цвета для текущей темы
+    const handleSignOut = async () => {
+        console.log('[ProfileHome] handleSignOut called');
+        await authService.signOut();
+        // onAuthStateChange в App.tsx автоматически переключит на экран авторизации
+    };
+
     const colors = {
         primary: getColor(currentTheme, 'primary'),
         primaryForeground: getColor(currentTheme, 'primary-foreground'),
@@ -42,6 +60,7 @@ export const ProfileHome = () => {
         border: getColor(currentTheme, 'border'),
         muted: getColor(currentTheme, 'muted'),
         switchBackground: getColor(currentTheme, 'switch-background'),
+        destructive: getColor(currentTheme, 'destructive'),
     };
 
     return (
@@ -55,12 +74,11 @@ export const ProfileHome = () => {
 
             {/* Main Content */}
             <View className="px-4 pt-12 pb-8">
-                {/* Welcome Card */}
+                {/* User Card */}
                 <View className="bg-card rounded-2xl shadow-soft-2 mb-6 overflow-hidden border border-border/50">
                     <View className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-2xl" />
 
                     <View className="p-6 items-center relative z-10">
-                        {/* Animated Avatar Container */}
                         <View className="relative mb-4">
                             <View className="absolute inset-0 bg-primary/20 rounded-full blur-xl scale-110" />
                             <View className="w-28 h-28 rounded-full justify-center items-center shadow-lg" style={{ backgroundColor: isDark ? colors.primaryForeground : colors.primary }}>
@@ -71,12 +89,38 @@ export const ProfileHome = () => {
                             </View>
                         </View>
 
-                        <Text className="text-2xl font-bold text-foreground mb-1">
-                            {t("profile.welcome_back")}
-                        </Text>
-                        <Text className="text-muted-foreground text-base">
-                            {t("profile.manage_your_profile")}
-                        </Text>
+                        {user ? (
+                            <>
+                                <Text className="text-2xl font-bold text-foreground mb-1">
+                                    {user.user_metadata?.full_name || user.email}
+                                </Text>
+                                <View className="flex-row items-center gap-1 mb-3">
+                                    <Mail size={14} color={colors.mutedForeground} />
+                                    <Text className="text-muted-foreground text-sm">
+                                        {user.email}
+                                    </Text>
+                                </View>
+                                <Pressable
+                                    onPress={handleSignOut}
+                                    className="mt-2 flex-row items-center gap-2 px-6 py-2 rounded-full border"
+                                    style={{ borderColor: colors.destructive }}
+                                >
+                                    <LogOut size={16} color={colors.destructive} />
+                                    <Text style={{ color: colors.destructive }} className="font-medium">
+                                        Выйти
+                                    </Text>
+                                </Pressable>
+                            </>
+                        ) : (
+                            <>
+                                <Text className="text-2xl font-bold text-foreground mb-1">
+                                    {t("profile.welcome_back")}
+                                </Text>
+                                <Text className="text-muted-foreground text-base">
+                                    {t("profile.manage_your_profile")}
+                                </Text>
+                            </>
+                        )}
                     </View>
                 </View>
 
@@ -85,7 +129,6 @@ export const ProfileHome = () => {
 
                 {/* Stats Cards Row */}
                 <View className="flex-row gap-4 mb-6">
-                    {/* Height Card */}
                     <View className="flex-1 bg-card rounded-xl p-4 border border-border/50 shadow-soft-1">
                         <View className="flex-row items-center gap-2 mb-2">
                             <View className="bg-primary/10 p-2 rounded-lg">
@@ -100,7 +143,6 @@ export const ProfileHome = () => {
                         </Text>
                     </View>
 
-                    {/* Weight Card */}
                     <View className="flex-1 bg-card rounded-xl p-4 border border-border/50 shadow-soft-1">
                         <View className="flex-row items-center gap-2 mb-2">
                             <View className="bg-primary/10 p-2 rounded-lg">
@@ -176,7 +218,7 @@ export const ProfileHome = () => {
                             </View>
                         </View>
 
-                        {/* 👇 НАСТРОЙКИ УВЕДОМЛЕНИЙ - ДОБАВЛЕНЫ ЗДЕСЬ */}
+                        {/* Notification Settings */}
                         <View className="border-t border-border pt-6">
                             <NotificationSettings isDark={isDark} />
                         </View>

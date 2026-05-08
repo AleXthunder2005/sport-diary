@@ -1,4 +1,3 @@
-// app/screens/excersise/ExerciseForm.jsx
 import React, { useState, useEffect } from 'react';
 import {
     View,
@@ -17,7 +16,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { Camera, Trash2, Save, X } from 'lucide-react-native';
 import { getColor } from '@/app/colors/colors';
 import { muscleGroups, exerciseTypes } from '@/app/entities/exercisesMetadata';
-import { exercisesApi } from '@/app/services/exercises/exerciseService';
+import { exercisesService } from '@/app/services/exercises/exerciseService';
 
 export default function ExerciseForm({ navigation, route }) {
     const { colorScheme } = useAppTheme();
@@ -47,7 +46,7 @@ export default function ExerciseForm({ navigation, route }) {
     }, [id]);
 
     const loadExercise = async () => {
-        const data = await exercisesApi.getExerciseFormData(id);
+        const data = await exercisesService.getExerciseFormData(id);
         setFormData(data);
         setInitialLoading(false);
     };
@@ -120,9 +119,9 @@ export default function ExerciseForm({ navigation, route }) {
 
         try {
             if (isEditing) {
-                await exercisesApi.updateExercise(id, formData);
+                await exercisesService.updateExercise(id, formData);
             } else {
-                await exercisesApi.createExercise(formData);
+                await exercisesService.createExercise(formData);
             }
 
             Alert.alert(

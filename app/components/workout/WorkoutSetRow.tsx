@@ -1,4 +1,3 @@
-// components/workout/WorkoutSetRow.jsx
 import React, { useState } from 'react';
 import { View, Text, TextInput, Pressable, Modal } from 'react-native';
 import { Check, Trash2, Edit2 } from 'lucide-react-native';

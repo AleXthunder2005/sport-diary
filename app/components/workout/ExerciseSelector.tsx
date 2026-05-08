@@ -3,7 +3,7 @@ import { View, Text, TextInput, ScrollView, Pressable, Image, Modal, ActivityInd
 import { Search, X, Dumbbell, TrendingUp } from 'lucide-react-native';
 import { getColor } from '@/app/colors/colors';
 import { useTranslation } from 'react-i18next';
-import { exercisesApi } from '@/app/services/exercises/exerciseService';
+import { exercisesService } from '@/app/services/exercises/exerciseService';
 import { getMuscleGroupById } from '@/app/entities/exercisesMetadata';
 
 export const ExerciseSelector = ({ visible, onClose, onSelectExercise, isDark }) => {
@@ -49,7 +49,7 @@ export const ExerciseSelector = ({ visible, onClose, onSelectExercise, isDark })
 
     const loadExercises = async () => {
         setLoading(true);
-        const data = await exercisesApi.getExercises();
+        const data = await exercisesService.getExercises();
         setExercises(data);
         setLoading(false);
     };
